@@ -5,11 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>誰でもDIY</title>
+    <title>自作の達人</title>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    <link rel="icon" href="{% static 'diy/image/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'diy/css/base.css' %}">
 
     {% block extra_head %}
@@ -19,10 +19,22 @@
 <body>
 
     {# TODO: ここにサイトタイトルとヘッダーを用意する。 #}
+    <header>
+        <a href="{% url 'diy:index' %}"><h1>自作の達人</h1></a>
+    </header>
 
+    <a href="{% url 'account_login' %}">ログイン</a>
+    <a href="{% url 'account_signup' %}">新規登録</a>
+    
+    <form action="{% url 'diy:index' %}" method="get">
+        <input type="text" name="search" placeholder="キーワードを入力してください。">
+        <input type="submit" value="検索">
+    </form>
 
-    {% block main %}
-    {% endblock %}
+    <main>
+        {% block main %}
+        {% endblock %}
+    </main>
 
 </body>
 </html>

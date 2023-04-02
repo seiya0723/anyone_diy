@@ -1,0 +1,21 @@
+:root{
+
+    /* 配色指定1 */
+    --base-color   : #37AB9D;
+    --accent-color : #4DC0B2;
+    --theme-color  : #FFC042;
+    --font-color   : #586365;
+
+
+    /* 配色指定2 */
+    /*
+    --base-color   : #1B435D;
+    --accent-color : #78BBE6;
+    --theme-color  : #D5EEFF;
+    --font-color   : #F99F48;
+    */
+}
+
+body{
+    margin:0;
+}

@@ -4,20 +4,20 @@
 {% endblock %}
 
 {% block main %}
-<div>helloWolrd</div>
 
+<h2>新着プロジェクト</h2>
 
+{% for project in projects %}
+<div>{{ community.title }}</div>
+{% endfor %}
 
+<h2>コミュニティ</h2>
 
-{# TODO: ここにDIYプロジェクトの一覧を表示 #}
-
-{# TODO: ここにコミュニティの一覧を表示 #}
+{% for community in communities %}
+<div>{{ community.name }}</div>
+{% endfor %}
 
 
 {% endblock %}
-
-
-
-
 
 

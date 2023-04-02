@@ -28,18 +28,47 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
+
 # Application definition
 
 INSTALLED_APPS = [
+    "diy.apps.DiyConfig",
+    "users.apps.UsersConfig",
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'django.contrib.sites',
+
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    "diy.apps.DiyConfig",
 ]
+
+AUTH_USER_MODEL = 'users.CustomUser'
+ACCOUNT_FORMS   = { "signup":"users.forms.SignupForm"}
+
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+ACCOUNT_AUTHENTICATION_METHOD   = "email"
+ACCOUNT_USERNAME_REQUIRED       = "False"
+ACCOUNT_EMAIL_VARIFICATION      = "mandatory"
+ACCOUNT_EMAIL_REQUIRED          = True
+EMAIL_BACKEND                   = "django.core.mail.backends.console.EmailBackend"
+
+SITE_ID                         = 1
+LOGIN_REDIRECT_URL              = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL     = '/'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -56,7 +85,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR / "templates" ],
+        'DIRS': [ BASE_DIR / "templates", BASE_DIR / "templates" / "allauth" ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,13 +147,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-SITATICFILES_DIRS = [ BASE_DIR / "static" ]
+STATICFILES_DIRS = [ BASE_DIR / "static" ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
+MEDIA_URL   = "/media/"
+MEDIA_ROOT  = BASE_DIR / "media"
 
