@@ -25,6 +25,7 @@ class Project(models.Model):
     #user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
 
 
+#TODO:この部分はProjectにprocessフィールドを用意して、マークダウン形式にするか？
 class Process(models.Model):
     id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
     dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
@@ -61,6 +62,16 @@ class Feedback(models.Model):
     #star        = models.IntegerField(verbose_name="星",validators=[MinValueValidator(1),MaxValueValidator(5)])
 
 
+
+class FavoriteGroup(models.Model):
+    id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
+    dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
+
+    name        = models.CharField(verbose_name="お気に入りグループ名",max_length=20)
+
+    #user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
+
+
 class Favorite(models.Model):
     id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
     dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
@@ -77,6 +88,14 @@ class Community(models.Model):
     #user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
     #members     = models.ManyToManyField(settings.AUTH_USER_MODEL,verbose_name="メンバー")
 
+
+class CommunityTopic(models.Model):
+    id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
+    dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
+    title       = models.CharField(verbose_name="トピック名",max_length=20)
+
+    #community   = models.ForeignKey(Community,verbose_name="コミュニティ",on_delete=models.CASCADE)
+
 class CommunityMessage(models.Model):
 
     id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
@@ -86,5 +105,15 @@ class CommunityMessage(models.Model):
 
     #image         = models.ImageField(verbose_name="画像")
     #user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
-    #community   = models.ForeignKey(Community,verbose_name="コミュニティ",on_delete=models.CASCADE)
+
+    #topic      =  models.ForeignKey(Topic,verbose_name="トピック",on_delete=models.CASCADE)
+
+
+# マークダウンに貼り付ける用の画像保存用モデル(ファイル名はサーバーサイドでuuidを割り当てて命名する？)
+class Album(models.Model):
+
+    id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
+    dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
+    #image      = models.ImageField(verbose_name="画像", upload_to="diy/album/image")
+    #user       = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
 
