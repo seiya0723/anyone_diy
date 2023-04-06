@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     "diy.apps.DiyConfig",
     "users.apps.UsersConfig",
 
+    "django_summernote",
+
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -156,4 +158,29 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL   = "/media/"
 MEDIA_ROOT  = BASE_DIR / "media"
+
+
+
+#TODO: DjangoSummernoteを実装する。
+
+# https://github.com/summernote/django-summernote
+SUMMERNOTE_CONFIG = {
+    'summernote': {
+        'width': '100%',
+        'height': '480',
+    }
+}
+
+# bleach
+# HTMLField
+ALLOWED_TAGS = [
+    'a', 'div', 'p', 'span', 'img', 'em', 'i', 'li', 'ol', 'ul', 'strong', 'br',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'table', 'tbody', 'thead', 'tr', 'td',
+    'abbr', 'acronym', 'b', 'blockquote', 'code', 'strike', 'u', 'sup', 'sub',
+]
+ATTRIBUTES = {
+    '*': ['style', 'align', 'title', ],
+    'a': ['href', ],
+}
 

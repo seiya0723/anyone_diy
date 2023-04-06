@@ -1,5 +1,4 @@
 :root{
-
     /* 配色指定1 */
     --base-color   : #37AB9D;
     --accent-color : #4DC0B2;
@@ -19,3 +18,25 @@
 body{
     margin:0;
 }
+
+h1 { }
+h2 { }
+h3 { }
+h4 { }
+h5 { }
+h6 { }
+
+
+/* コンテンツの表示 何分割で表示させるか？ 左右の枠はどうするか？ */
+.content_area{
+    display:flex;
+    flex-wrap:wrap;
+}
+.content{
+    width: calc(100% / 5);
+}
+.content_inner{
+    border:solid 1px black;
+
+}
+

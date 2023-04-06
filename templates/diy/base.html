@@ -18,7 +18,6 @@
 </head>
 <body>
 
-    {# TODO: ここにサイトタイトルとヘッダーを用意する。 #}
     <header>
         <a href="{% url 'diy:index' %}"><h1>自作の達人</h1></a>
     </header>
@@ -26,10 +25,15 @@
     <a href="{% url 'account_login' %}">ログイン</a>
     <a href="{% url 'account_signup' %}">新規登録</a>
     
+    {# TODO:この検索欄、コミュニティ検索であればコミュニティのビューへ、プロジェクト検索であればプロジェクトのビューへ行くようaction属性を変えたい。 #}
+    {# 複雑になるので、ヘッダーに検索バーは用意しない。スマホ表示時のレイアウトも考慮しなければならなくなる。#}
+    {# ↑ そこで、mainエリアに検索バーを配置する。レイアウト上、不自然な位置に配置されないように注意する。 #}
+    {% comment %}
     <form action="{% url 'diy:index' %}" method="get">
         <input type="text" name="search" placeholder="キーワードを入力してください。">
         <input type="submit" value="検索">
     </form>
+    {% endcomment %}
 
     <main>
         {% block main %}

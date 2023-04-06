@@ -7,16 +7,38 @@
 
 <h2>新着プロジェクト</h2>
 
-{% for project in projects %}
-<div>{{ community.title }}</div>
-{% endfor %}
+
+<div class="content_area">
+    {% for project in projects %}
+    <div class="content">
+        <div class="content_inner">
+            {{ project.title }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+<div>
+    <a href="{% url 'diy:project' %}">もっと見る</a>
+</div>
 
 <h2>コミュニティ</h2>
 
-{% for community in communities %}
-<div>{{ community.name }}</div>
-{% endfor %}
+<div class="content_area">
+    {% for community in communities %}
+    <div class="content">
+        <div class="content_inner">
+            {{ community.name }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
 
+
+<div>
+    <a href="{% url 'diy:community' %}">もっと見る</a>
+</div>
 
 {% endblock %}
 

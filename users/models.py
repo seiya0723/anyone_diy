@@ -34,7 +34,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email       = models.EmailField(_('email address'), unique=True)
     
     handle_name     = models.CharField(verbose_name="ハンドルネーム", max_length=30)
-    introduction    = models.CharField(verbose_name="自己紹介文", max_length=2000, null=True, blank=True)
+    #introduction    = models.CharField(verbose_name="自己紹介文", max_length=2000, null=True, blank=True)
+    introduction    = models.TextField(verbose_name="自己紹介文", null=True, blank=True)
     icon            = models.ImageField(verbose_name="アイコン",upload_to="users/custom_user/icon/",null=True,blank=True)
 
     is_staff    = models.BooleanField(

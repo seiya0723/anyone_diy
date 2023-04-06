@@ -12,24 +12,22 @@ from django.core.paginator import Paginator
 from django.http.response import JsonResponse
 from django.template.loader import render_to_string
 
-
 from django.contrib import messages
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 #TODO: 後にメール確認取れていない場合はリダイレクトさせるよう、LoginRequiredMixinを書き換える
 # https://noauto-nolife.com/post/django-create-origin-mixin/
 
 
 from .models import Category,Project,Material,Feedback,Favorite,Community,CommunityMessage
-from .forms import CategoryForm,ProjectForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityMessageForm
+from .forms import CategoryForm,ProjectForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityMessageForm,CustomUserForm
 
+from users.models import CustomUser
 
 #TODO: 1ページに表示させるコンテンツ数
 LIST_PER_PAGE   = 10
 
 class IndexView(View):
     def get(self, request, *args, **kwargs):
-
         context = {}
 
         #TODO: コミュニティとプロジェクトの一部をコンテキストへ
@@ -40,14 +38,13 @@ class IndexView(View):
 
         return render(request, "diy/index.html", context)
 
-
 index   = IndexView.as_view()
 
 
 class ProjectView(View):
     def get(self, request, *args, **kwargs):
 
-        context = {}
+        context = {}            
         query   = Q()
 
         if "search" in request.GET:
@@ -59,9 +56,8 @@ class ProjectView(View):
 
                 query &= Q( Q(title__contains=word) | Q(description__contains=word) )
 
-        
-        #TODO: ここにプロジェクトの詳細検索を受け付ける(難易度やフィードバックの点数などでも検索できるようにする。)
 
+        #TODO: ここにプロジェクトの詳細検索を受け付ける(難易度やフィードバックの点数などでも検索できるようにする。)
         projects    = Project.objects.filter(query).order_by("-dt")
 
         #TODO: 1ページに表示させるコンテンツ数は？
@@ -72,12 +68,14 @@ class ProjectView(View):
         else:
             context["projects"] = paginator.get_page(1)
 
+        
+        # 投稿する内容
+        context["form"]     = ProjectForm()
 
         return render(request, "diy/project.html", context)
 
     def post(self, request, *args, **kwargs):
         # ここでプロジェクトの投稿を受け付ける
-        
         # プロジェクトの投稿とプロジェクトに紐づく素材の保存もセットでやる。
         # .getlist()を使う。
 
@@ -107,7 +105,6 @@ class ProjectView(View):
 
             if form.is_valid():
                 form.save()
-
 
         messages.success(request, "プロジェクトの投稿に成功しました")
 
@@ -145,13 +142,10 @@ class ProjectSingleView(View):
         else:
             messages.error(request, "フィードバックの投稿に失敗しました")
 
-
-
         return redirect("diy:project_single", pk)
 
     def delete(self, request, pk, *args, **kwargs):
         pass
-
     def put(self, request, pk, *args, **kwargs):
         pass
     def patch(self, request, pk, *args, **kwargs):
@@ -177,7 +171,6 @@ class CommunityView(View):
 
                 query &= Q(name__contains=word)
 
-
         communities     = Community.objects.filter(query).order_by("-dt")
 
         #TODO: 1ページに表示させるコンテンツ数は？
@@ -193,7 +186,7 @@ class CommunityView(View):
 
 
     def post(self, request, *args, **kwargs):
-        #TODO :ここでコミュニティのトピックの作成
+        #TODO :ここでコミュニティの作成
 
         copied              = request.POST.copy()
         copied["user"]      = request.user
@@ -217,6 +210,10 @@ class CommunityView(View):
         # コミュニティの編集
         pass
 
+    def patch(self, request, *args, **kwargs):
+        # コミュニティに参加申請？
+        pass
+    
 
 community   = CommunityView.as_view()
 
@@ -236,10 +233,12 @@ class CommunitySingleView(View):
     def post(self, request, pk, *args, **kwargs):
         #TODO :ここでコミュニティのトピックの作成
 
-        copied  = request.POST.copy()
+        copied              = request.POST.copy()
 
         copied["community"] = community
         copied["user"]      = request.user
+
+
 
         form    = CommunityTopicForm(copied)
 
@@ -254,23 +253,51 @@ class CommunitySingleView(View):
 community_single    = CommunitySingleView.as_view()
 
 
+# コミュニティトピックの個別ページ
+class CommunityTopicView(View):
+
+    def get(self, request, *args, **kwargs):
+        return render(request, "bbs/index.html")
+
+    def post(self, request, *args, **kwargs):
+        return redirect("bbs:index")
+
+community_topic     = CommunityTopicView.as_view()
+
+
+
+
 # マイページビュー
 class MypageView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, "diy/mypage.html")
 
-    def put(self, request, *args, **kwargs):
-        #TODO: ここでユーザーモデルに紐づく情報の編集を受け付ける。
-        pass
+    def post(self, request, *args, **kwargs):
+
+        user    = CustomUser.objects.filter(id=request.user.id).first()
+        form    = CustomUserForm(request.POST, instance=user)
+
+        if form.is_valid():
+            messages.success(request, "ユーザー情報の編集を受け付けました！")
+            form.save()
+        else:
+            messages.error(request, "ユーザー情報の編集に失敗しました")
+
+        return redirect("diy:mypage")
 
 mypage  = MypageView.as_view()
 
 
 class UserView(View):
     def get(self, request, pk, *args, **kwargs):
-        
-            
-        return render(request, "diy/user.html")
+
+        context             = {}
+        context["user"]     = CustomUser.objects.filter(id=pk).first()
+
+        return render(request, "diy/user.html", context)
+
+    #TODO:後にここにダイレクトメッセージ機能でも実装するか？
+
 
 user    = UserView.as_view()
 

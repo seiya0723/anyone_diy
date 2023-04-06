@@ -1,12 +1,16 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Category,Project,Material,Feedback,Favorite,FavoriteFolder,Community,CommunityTopic,CommunityMessage,Album
+from .models import Category,Project,Material,Feedback,Favorite,FavoriteFolder,Community,CommunityTopic,CommunityMessage #,Album
+from .forms import ProjectForm,CommunityMessageForm,FeedbackForm
+
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display    = [ "id","dt","name" ]
 
 class ProjectAdmin(admin.ModelAdmin):
+
+    form            = ProjectForm
     list_display    = [ "id","dt","category","title","format_thumbnail","description","time","level","user","process" ]
 
     def format_thumbnail(self,obj):
@@ -21,6 +25,7 @@ class MaterialAdmin(admin.ModelAdmin):
     list_display    = [ "id","dt","name","amount","project","user" ]
 
 class FeedbackAdmin(admin.ModelAdmin):
+    form            = FeedbackForm
     list_display    = [ "id","dt","comment","project","user","star" ]
 
 class FavoriteFolderAdmin(admin.ModelAdmin):
@@ -48,11 +53,14 @@ class CommunityTopicAdmin(admin.ModelAdmin):
     list_display    = [ "id","dt","title","community","user" ]
 
 class CommunityMessageAdmin(admin.ModelAdmin):
+    form            = CommunityMessageForm
     list_display    = [ "id","dt","community_topic","comment","user", ]
 
+
+"""
 class AlbumAdmin(admin.ModelAdmin):
     list_display    = [ "id","dt","image","user" ]
-
+"""
 
 
 admin.site.register(Category            ,CategoryAdmin        )
@@ -64,5 +72,5 @@ admin.site.register(Favorite            ,FavoriteAdmin        )
 admin.site.register(Community           ,CommunityAdmin       )
 admin.site.register(CommunityTopic      ,CommunityTopicAdmin  )
 admin.site.register(CommunityMessage    ,CommunityMessageAdmin)
-admin.site.register(Album               ,AlbumAdmin           )
+#admin.site.register(Album               ,AlbumAdmin           )
 
