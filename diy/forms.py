@@ -7,6 +7,8 @@ from django_summernote.widgets import SummernoteWidget
 from django.conf import settings
 import bleach
 
+
+
 class HTMLField(forms.CharField):
     def __init__(self, *args, **kwargs):
         super(HTMLField, self).__init__(*args, **kwargs)
@@ -91,5 +93,7 @@ class CustomUserForm(forms.ModelForm):
         model   = CustomUser
         fields  = ["first_name","last_name","handle_name","introduction","icon",]
 
-    introduction    = HTMLField
+    introduction    = HTMLField()
+
+
 

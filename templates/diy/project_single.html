@@ -1,9 +1,44 @@
 {% extends "diy/base.html" %}
+{% load static %}
 
 {% block extra_head %}
 {% endblock %}
 
 {% block main %}
+
+
+<h2 class="project_title">{{ project.title }}</h2>
+
+<div class="project_thumbnail_area">
+    {% if project.thumbnail %}
+    <img class="project_thumbnail" src="{{ project.thumbnail.url }}" alt="">
+    {% else %}
+    <img class="project_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
+    {% endif %}
+</div>
+
+
+<div>{{ project.dt           }}</div>
+<div>{{ project.category     }}</div>
+<div>{{ project.description  }}</div>
+<div>{{ project.time         }}</div>
+<div>{{ project.level        }}</div>
+<div>{{ project.user         }}</div>
+
+
+
+<h2>材料</h2>
+
+{% for material in materials %}
+<div>{{ material }}</div>
+{% endfor %}
+
+<h2>作業工程</h2>
+
+<div>{{ project.process|safe }}</div>
+
+
+
 {% endblock %}
 
 

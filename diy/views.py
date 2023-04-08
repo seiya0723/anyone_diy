@@ -123,7 +123,9 @@ class ProjectSingleView(View):
 
         context                 = {}
         context["project"]      = Project.objects.filter(id=pk).first()
+        context["materials"]    = Material.objects.filter(project=pk).order_by("dt")
         context["feedbacks"]    = Feedback.objects.filter(project=pk).order_by("-dt")
+
 
         return render(request, "diy/project_single.html", context)
 
@@ -270,7 +272,11 @@ community_topic     = CommunityTopicView.as_view()
 # マイページビュー
 class MypageView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, "diy/mypage.html")
+
+        context             = {}
+        context["form"]     = CustomUserForm()
+
+        return render(request, "diy/mypage.html", context)
 
     def post(self, request, *args, **kwargs):
 

@@ -13,7 +13,10 @@
     <input type="text" name="last_name"   value="{{ request.user.last_name   }}">
     <input type="text" name="handle_name" value="{{ request.user.handle_name }}">
     <input type="file" name="icon">
-    <textarea name="introduction">{{ request.user.introduction }}</textarea>
+
+    {{ form.introduction }}
+
+
     <input type="submit" value="編集">
 </form>
 

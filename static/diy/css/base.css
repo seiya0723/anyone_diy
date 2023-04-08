@@ -1,9 +1,9 @@
 :root{
     /* 配色指定1 */
-    --base-color   : #37AB9D;
-    --accent-color : #4DC0B2;
-    --theme-color  : #FFC042;
-    --font-color   : #586365;
+    --green        : #37AB9D;
+    --light-green  : #4DC0B2;
+    --orange       : #FFC042;
+    --gray         : #586365;
 
 
     /* 配色指定2 */
@@ -17,7 +17,12 @@
 
 body{
     margin:0;
+    color:var(--gray);
+
+    /* ここにフォントを入れる？ 自作の達人←太鼓の達人みたいな柔らかめのフォント？ */
+
 }
+img { max-width:100%; }
 
 h1 { }
 h2 { }
@@ -26,17 +31,105 @@ h4 { }
 h5 { }
 h6 { }
 
+a {
+    text-decoration:none;
+    color:var(--gray);
+}
 
-/* コンテンツの表示 何分割で表示させるか？ 左右の枠はどうするか？ */
+
+/* header_area */
+.header_area{
+    display:flex;
+}
+.header_title{
+    width:80%;
+}
+.header_icon{
+    width:10%;
+}
+
+
+/* content_area */
+
 .content_area{
     display:flex;
     flex-wrap:wrap;
-}
-.content{
-    width: calc(100% / 5);
-}
-.content_inner{
-    border:solid 1px black;
+
+    justify-content:center;
 
 }
+.content{
+    width:  calc(100vw / 5 - 1rem);
+    height: calc(100vw / 5 - 1rem);
+}
+.content_inner{
+    /*
+    border:solid 1px black;
+    */
+    display:block;
+    height:100%;
+}
+.content_thumbnail_area{
+    /* 正方形にするため、widthと同じ値を入れたい。 */
+    height: 100%;
+
+    position:relative;
+    background: var(--light-green);
+    overflow:hidden;
+}
+.content_thumbnail{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    transition:0.25s;
+
+    /* TODO:できれば画像のアスペクト比を維持した状態で表示させたい。 */
+    width:  calc(100vw / 5 - 1rem);
+    height: calc(100vw / 5 - 1rem);
+
+}
+
+.content_thumbnail_area:hover .content_thumbnail{
+    transform:translate(-50%,-50%) scale(1.25);
+}
+
+.content_title{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    text-align:center;
+    font-size:1.25rem;
+    font-weight:bold;
+    background:var(--orange);
+    padding:0.5rem 0;
+}
+.content_readmore_area{
+    text-align:right;
+}
+.content_readmore{
+    display:inline-block;
+    padding:0.5rem 3rem;
+    margin:0.5rem;
+    border-radius:2rem;
+    border:solid 0.2rem var(--orange);
+    transition: 0.2s;
+}
+.content_readmore:hover{
+    background: var(--orange);
+}
+
+/* content_area responsive */
+
+@media (max-width:800px) {
+    .content{
+        width:  calc(100vw / 2);
+        height: calc(100vw / 2);
+    }
+    .content_readmore_area{
+        text-align:center;
+    }
+
+}
+
 
