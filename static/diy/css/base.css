@@ -176,6 +176,15 @@ a {
 }
 
 
+.material_area{
+    display:flex;
+    flex-wrap:wrap;
+}
+.material_content{
+    font-size:1.2rem;
+    text-align:center;
+    width:calc(100% / 2);
+}
 
 
 
@@ -211,6 +220,12 @@ input[type="radio"]{
 .false_star {
     color:var(--gray);
 }
+
+.feedback_star { font-size:0; }
+.feedback_star > span { font-size:1.25rem; }
+.feedback_true_star { color:orange; }
+.feedback_false_star { color:gray; }
+
 
 
 /* ホバーをしたときの装飾 */

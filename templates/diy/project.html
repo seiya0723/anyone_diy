@@ -12,8 +12,49 @@
 
 {% include "diy/particle/search.html" %}
 {% include "diy/particle/project_content.html" %}
-
 {% include "diy/particle/paginator.html" with data=projects param="project_page" %}
+
+
+
+<h2>プロジェクトを投稿する</h2>
+
+
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <h3>必要な素材</h3>
+    <input type="text" name="name" placeholder="素材名">
+    <input type="text" name="amount" placeholder="量">
+
+    <h3>プロジェクト</h3>
+
+    <select name="category">
+        <option value="">カテゴリを選んでください</option>
+        {% for category in categories %}
+        <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="text" name="title" maxlength="20" required placeholder="タイトル">
+    <input type="file" name="thumbnail">
+
+    {# TODO: ここでレベル(レベルは5段階なので、アイコンで表現できないだろうか？)と所要時間のフォームを作っておく。#}
+    <input type="number" name="time" placeholder="所要時間">
+    <input type="number" name="level" placeholder="レベル">
+
+    <textarea name="description"></textarea>
+
+    {# TODO: ここで使用する素材を書く。JavaScriptでフォームを追加できるようにする。 #}
+
+    {{ form.process }}
+
+    <input type="submit" value="送信"> 
+
+</form>
+
+
+
+
 
 {% endblock %}
 

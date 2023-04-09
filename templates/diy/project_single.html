@@ -38,7 +38,10 @@
         <div>{{ project.description|urlize|linebreaksbr  }}</div>
         <h3 class="project_subtitle">材料</h3>
         {% for material in materials %}
-        <div>{{ material }}</div>
+        <div class="material_area">
+            <div class="material_content">{{ material.name }}</div>
+            <div class="material_content">{{ material.amount }}</div>
+        </div>
         {% endfor %}
     </div>
 
@@ -46,20 +49,6 @@
 
 <div class="project_feedback_area">
 
-    <div class="project_feedback">
-        <h3 class="project_subtitle">投稿されたフィードバック</h3>
-        {% if feedback %}
-            {% for feedback in feedbacks %}
-            <div>{{ feedback.star }}</div>
-            {% endfor %}
-
-            {% include "diy/particle/paginator.html" with data=feedbacks param="feedback_page" %}
-
-        {% else %}
-        <div>フィードバックはありません。</div>
-        {% endif %}
-
-    </div>
     <div class="project_feedback">
         <h3 class="project_subtitle">フィードバックを投稿する</h3>
 
@@ -88,6 +77,25 @@
         </form>
         {% else %}
         <div>フィードバックを投稿するには、<a href="{% url 'account_login' %}">ログイン</a>してください。</div>
+        {% endif %}
+
+    </div>
+    <div class="project_feedback">
+        <h3 class="project_subtitle">投稿されたフィードバック</h3>
+        {% if feedbacks %}
+            {% for feedback in feedbacks %}
+            <div class="feedback_star">
+                <span class="feedback_true_star">{% for s in feedback.star_icon.true_star %}<i class="fas fa-star"></i>{% endfor %}</span>
+                <span class="feedback_false_star">{% for s in feedback.star_icon.false_star %}<i class="far fa-star"></i>{% endfor %}</span>
+            </div>
+            <div>投稿時間: {{ feedback.dt }}</div>
+            <div>投稿者: {{ feedback.user.handle_name }}</div>
+            <div>{{ feedback.comment }}</div>
+            {% endfor %}
+
+            {% include "diy/particle/paginator.html" with data=feedbacks param="feedback_page" %}
+        {% else %}
+        <div>フィードバックはありません。</div>
         {% endif %}
 
     </div>

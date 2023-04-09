@@ -1,0 +1,30 @@
+{% extends "diy/base.html" %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block main %}
+
+<h2>{{ community_topic.title }}</h2>
+
+{% if community_messages %}
+    {% for community_message in community_messages %}
+    <div>投稿日時: {{ community_message.dt }}</div>
+    <div>投稿者: {{ community_message.user.handle_name }}</div>
+    <div>{{ community_message.comment|safe }}</div>
+    {% endfor %}
+    {% include "diy/particle/paginator.html" with data=community_messages param="community_message_page" %}
+{% else %}
+    <div>まだメッセージが投稿されていません。</div>
+{% endif %}
+
+<h2>メッセージを投稿する</h2>
+
+<form action="" method="POST">
+    {% csrf_token %}
+    {{ form.comment }}
+    <input type="submit" value="送信">
+</form>
+
+{% endblock %}
+

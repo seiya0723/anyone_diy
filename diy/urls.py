@@ -12,5 +12,6 @@ urlpatterns = [
 
     path("mypage/"                    , views.mypage              , name="mypage"           ),
     path("user/<uuid:pk>"             , views.user                , name="user"             ),
+
 ]
 

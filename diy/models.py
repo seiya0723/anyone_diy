@@ -5,6 +5,9 @@ from django.conf import settings
 
 import uuid
 
+MAX_STAR    = 5
+
+
 class Category(models.Model):
 
     class Meta:
@@ -109,7 +112,16 @@ class Feedback(models.Model):
     comment     = models.CharField(verbose_name="コメント",max_length=1000)
     project     = models.ForeignKey(Project,verbose_name="プロジェクト",on_delete=models.CASCADE)
     user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
-    star        = models.IntegerField(verbose_name="星",validators=[MinValueValidator(1),MaxValueValidator(5)])
+    star        = models.IntegerField(verbose_name="星",validators=[MinValueValidator(1),MaxValueValidator(MAX_STAR)])
+
+
+    def star_icon(self):
+        dic                 = {}
+        dic["true_star"]    = self.star * " "
+        dic["false_star"]   = (MAX_STAR - self.star) * " "
+
+        return dic
+
 
 
 class FavoriteFolder(models.Model):
@@ -191,7 +203,7 @@ class CommunityMessage(models.Model):
 
     community_topic =  models.ForeignKey(CommunityTopic,verbose_name="コミュニティトピック",on_delete=models.CASCADE)
 
-    # TODO:ここはSummernote実装時にTextFieldに直す。
+    # TODO:ここはSummernote実装時にTextFieldに直す。(制限強めにしておく)
     #comment         = models.CharField(verbose_name="コメント",max_length=1000)
     comment         = models.TextField(verbose_name="コメント")
     user            = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)

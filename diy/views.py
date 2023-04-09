@@ -19,7 +19,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 from .models import Category,Project,Material,Feedback,Favorite,Community,CommunityTopic,CommunityMessage
-from .forms import CategoryForm,ProjectForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityMessageForm,CustomUserForm
+from .forms import CategoryForm,ProjectForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityTopicForm, CommunityMessageForm,CustomUserForm
 
 from users.models import CustomUser
 
@@ -69,6 +69,10 @@ class ProjectView(View):
         
         # 投稿する内容
         context["form"]     = ProjectForm()
+
+        context["categories"]   = Category.objects.order_by("-dt")
+
+
 
         return render(request, "diy/project.html", context)
 
@@ -249,7 +253,7 @@ class CommunitySingleView(View):
         #TODO :ここでコミュニティのトピックの作成
 
         copied              = request.POST.copy()
-        copied["community"] = community
+        copied["community"] = pk
         copied["user"]      = request.user
 
         form    = CommunityTopicForm(copied)
@@ -274,20 +278,22 @@ class CommunityTopicView(View):
         context["community_topic"]  = CommunityTopic.objects.filter(id=pk).first()
 
         community_messages  = CommunityMessage.objects.filter(community_topic=pk).order_by("-dt")
-        paginator           = Paginator(communities,LIST_PER_PAGE)
+        paginator           = Paginator(community_messages,LIST_PER_PAGE)
 
         if "community_message_page" in request.GET:
             context["community_messages"]  = paginator.get_page(request.GET["community_message_page"])
         else:
             context["community_messages"]  = paginator.get_page(1)
 
+        context["form"]     = CommunityMessageForm()
 
         return render(request, "diy/community_topic.html", context)
 
     def post(self, request, pk, *args, **kwargs):
 
-        copied          = request.POST.copy()
-        copied["user"]  = request.user
+        copied                      = request.POST.copy()
+        copied["community_topic"]   = pk
+        copied["user"]              = request.user
 
         form    = CommunityMessageForm(copied)
 
@@ -300,8 +306,6 @@ class CommunityTopicView(View):
         return redirect("diy:community_topic", pk)
 
 community_topic     = CommunityTopicView.as_view()
-
-
 
 
 # マイページビュー

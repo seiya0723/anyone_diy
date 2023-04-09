@@ -29,16 +29,6 @@
         {% endif %}
     </header>
 
-    {# TODO:この検索欄、コミュニティ検索であればコミュニティのビューへ、プロジェクト検索であればプロジェクトのビューへ行くようaction属性を変えたい。 #}
-    {# 複雑になるので、ヘッダーに検索バーは用意しない。スマホ表示時のレイアウトも考慮しなければならなくなる。#}
-    {# ↑ そこで、mainエリアに検索バーを配置する。レイアウト上、不自然な位置に配置されないように注意する。 #}
-    {% comment %}
-    <form action="{% url 'diy:index' %}" method="get">
-        <input type="text" name="search" placeholder="キーワードを入力してください。">
-        <input type="submit" value="検索">
-    </form>
-    {% endcomment %}
-
     <main>
         {% block main %}
         {% endblock %}
