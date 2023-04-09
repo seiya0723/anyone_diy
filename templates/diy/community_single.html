@@ -4,6 +4,16 @@
 {% endblock %}
 
 {% block main %}
+
+<h2>トピック一覧</h2>
+
+{% for community_topic in community_topics %}
+<div>{{ community_topic.title }}</div>
+{% endfor %}
+
+{% include "diy/particle/paginator.html" with data=communities param="community_topic_page" %}
+
+
 {% endblock %}
 
 

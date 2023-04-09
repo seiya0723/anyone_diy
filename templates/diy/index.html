@@ -8,49 +8,18 @@
 
 <h2><a href="{% url 'diy:project' %}">新着プロジェクト</a></h2>
 
-{# TODO: この部分はプロジェクトの一覧ページでも使うので、部品化させる。 #}
-<div class="content_area">
-    {% for project in projects %}
-    <div class="content">
-        <a class="content_inner" href="{% url 'diy:project_single' project.id %}">
-            <div class="content_thumbnail_area">
-                {% if project.thumbnail %}
-                <img class="content_thumbnail" src="{{ project.thumbnail.url }}" alt="">
-                {% else %}
-                <img class="content_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
-                {% endif %}
-                <div class="content_title">{{ project.title }}</div>
-            </div>
-        </a>
-    </div>
-    {% endfor %}
-</div>
+{% include 'diy/particle/project_content.html' %}
 
 <div class="content_readmore_area">
     <a class="content_readmore" href="{% url 'diy:project' %}">もっと見る</a>
 </div>
 
+<h2><a href="{% url 'diy:community' %}">新着コミュニティ</a></h2>
 
+{% include 'diy/particle/community_content.html' %}
 
-
-
-<h2>コミュニティ</h2>
-
-<div class="content_area">
-    {% for community in communities %}
-    <div class="content">
-        <div class="content_inner">
-            {{ community.name }}
-        </div>
-    </div>
-    {% endfor %}
-</div>
-
-
-<div>
-    <a href="{% url 'diy:community' %}">もっと見る</a>
+<div class="content_readmore_area">
+    <a class="content_readmore" href="{% url 'diy:community' %}">もっと見る</a>
 </div>
 
 {% endblock %}
-
-

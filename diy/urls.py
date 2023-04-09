@@ -8,6 +8,9 @@ urlpatterns = [
     path("project_single/<uuid:pk>/"  , views.project_single      , name="project_single"   ),
     path("community/"                 , views.community           , name="community"        ),
     path("community_single/<uuid:pk>/", views.community_single    , name="community_single" ),
+    path("community_topic/<uuid:pk>/" , views.community_topic     , name="community_topic"  ),
+
     path("mypage/"                    , views.mypage              , name="mypage"           ),
+    path("user/<uuid:pk>"             , views.user                , name="user"             ),
 ]
 

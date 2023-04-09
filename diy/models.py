@@ -43,6 +43,42 @@ class Project(models.Model):
     #process     = models.CharField(verbose_name="作業工程(作業内容)",max_length=3000)
     process     = models.TextField(verbose_name="作業工程(作業内容)")
 
+
+
+    #TODO: ここに星の平均点を出す。
+
+
+    def avg_star_score(self):
+        feedbacks   = Feedback.objects.filter(project=self.id).aggregate(Avg("star"))
+        
+        if feedbacks["star__avg"]:
+            return feedbacks["star__avg"]
+        else:
+            return 0
+
+    def avg_star_icon_few(self):
+        feedbacks   = Feedback.objects.filter(project=self.id).aggregate(Avg("star"))
+        avg         = feedbacks["star__avg"]
+
+        #平均スコアなしの場合は0を返す
+        if not avg:
+            return 0
+
+        few     = avg - int(avg)
+
+        if 0.4 > few and few >= 0:
+            return 0
+        elif 0.6 > few and few >= 0.4:
+            return 0.5
+        else:
+            return 1 
+
+    #TODO:ここにフィードバック数を出す。
+    def feedback_amount(self):
+        return Feedback.objects.filter(project=self.id).count()
+    
+
+
     
     def __str__(self):
         return self.title
@@ -116,6 +152,10 @@ class Community(models.Model):
     id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
     dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
     name        = models.CharField(verbose_name="コミュニティ名",max_length=20)
+
+    
+    #TODO:コミュニティにもサムネイルを
+
 
     user        = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", verbose_name="投稿者",on_delete=models.CASCADE)
     members     = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="+", verbose_name="メンバー")

@@ -18,7 +18,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # https://noauto-nolife.com/post/django-create-origin-mixin/
 
 
-from .models import Category,Project,Material,Feedback,Favorite,Community,CommunityMessage
+from .models import Category,Project,Material,Feedback,Favorite,Community,CommunityTopic,CommunityMessage
 from .forms import CategoryForm,ProjectForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityMessageForm,CustomUserForm
 
 from users.models import CustomUser
@@ -31,8 +31,8 @@ class IndexView(View):
         context = {}
 
         #TODO: コミュニティとプロジェクトの一部をコンテキストへ
-        context["projects"]     = Project.objects.order_by("-dt")
-        context["communities"]  = Community.objects.order_by("-dt")
+        context["projects"]     = Project.objects.order_by("-dt")[:5]
+        context["communities"]  = Community.objects.order_by("-dt")[:5]
     
         # トップページで検索をした場合、コミュニティ・プロジェクトの一部を表示？
 
@@ -59,12 +59,10 @@ class ProjectView(View):
 
         #TODO: ここにプロジェクトの詳細検索を受け付ける(難易度やフィードバックの点数などでも検索できるようにする。)
         projects    = Project.objects.filter(query).order_by("-dt")
-
-        #TODO: 1ページに表示させるコンテンツ数は？
         paginator   = Paginator(projects,LIST_PER_PAGE)
 
-        if "page" in request.GET:
-            context["projects"] = paginator.get_page(request.GET["page"])
+        if "project_page" in request.GET:
+            context["projects"] = paginator.get_page(request.GET["project_page"])
         else:
             context["projects"] = paginator.get_page(1)
 
@@ -124,7 +122,14 @@ class ProjectSingleView(View):
         context                 = {}
         context["project"]      = Project.objects.filter(id=pk).first()
         context["materials"]    = Material.objects.filter(project=pk).order_by("dt")
-        context["feedbacks"]    = Feedback.objects.filter(project=pk).order_by("-dt")
+
+        feedbacks   = Feedback.objects.filter(project=pk).order_by("-dt")
+        paginator   = Paginator(feedbacks,LIST_PER_PAGE)
+
+        if "feedback_page" in request.GET:
+            context["feedbacks"]    = paginator.get_page(request.GET["feedback_page"])
+        else:
+            context["feedbacks"]    = paginator.get_page(1)
 
 
         return render(request, "diy/project_single.html", context)
@@ -160,7 +165,6 @@ project_single  = ProjectSingleView.as_view()
 class CommunityView(View):
 
     def get(self, request, *args, **kwargs):
-
         context = {}
         query   = Q()
 
@@ -178,8 +182,8 @@ class CommunityView(View):
         #TODO: 1ページに表示させるコンテンツ数は？
         paginator       = Paginator(communities,LIST_PER_PAGE)
 
-        if "page" in request.GET:
-            context["communities"]  = paginator.get_page(request.GET["page"])
+        if "community_page" in request.GET:
+            context["communities"]  = paginator.get_page(request.GET["community_page"])
         else:
             context["communities"]  = paginator.get_page(1)
 
@@ -228,7 +232,16 @@ class CommunitySingleView(View):
         #ここでコミュニティの個別ページを表示。コミュニティ内のトピックも表示
         context                     = {}
         context["community"]        = Community.objects.filter(id=pk).first()
-        context["community_topics"] = CommunityTopic.objects.filter(community=pk).order_by("-dt")
+        community_topics            = CommunityTopic.objects.filter(community=pk).order_by("-dt")
+
+        #TODO: 1ページに表示させるコンテンツ数は？
+        paginator       = Paginator(community_topics,LIST_PER_PAGE)
+
+        if "community_topic_page" in request.GET:
+            context["community_topics"]  = paginator.get_page(request.GET["community_topic_page"])
+        else:
+            context["community_topics"]  = paginator.get_page(1)
+
 
         return render(request, "diy/community_single.html", context)
 
@@ -236,11 +249,8 @@ class CommunitySingleView(View):
         #TODO :ここでコミュニティのトピックの作成
 
         copied              = request.POST.copy()
-
         copied["community"] = community
         copied["user"]      = request.user
-
-
 
         form    = CommunityTopicForm(copied)
 
@@ -258,11 +268,36 @@ community_single    = CommunitySingleView.as_view()
 # コミュニティトピックの個別ページ
 class CommunityTopicView(View):
 
-    def get(self, request, *args, **kwargs):
-        return render(request, "bbs/index.html")
+    def get(self, request, pk, *args, **kwargs):
 
-    def post(self, request, *args, **kwargs):
-        return redirect("bbs:index")
+        context                     = {}
+        context["community_topic"]  = CommunityTopic.objects.filter(id=pk).first()
+
+        community_messages  = CommunityMessage.objects.filter(community_topic=pk).order_by("-dt")
+        paginator           = Paginator(communities,LIST_PER_PAGE)
+
+        if "community_message_page" in request.GET:
+            context["community_messages"]  = paginator.get_page(request.GET["community_message_page"])
+        else:
+            context["community_messages"]  = paginator.get_page(1)
+
+
+        return render(request, "diy/community_topic.html", context)
+
+    def post(self, request, pk, *args, **kwargs):
+
+        copied          = request.POST.copy()
+        copied["user"]  = request.user
+
+        form    = CommunityMessageForm(copied)
+
+        if form.is_valid():
+            messages.success(request, "メッセージの投稿を受け付けました！")
+            form.save()
+        else:
+            messages.error(request, "メッセージの投稿に失敗しました")
+
+        return redirect("diy:community_topic", pk)
 
 community_topic     = CommunityTopicView.as_view()
 
@@ -275,6 +310,25 @@ class MypageView(LoginRequiredMixin, View):
 
         context             = {}
         context["form"]     = CustomUserForm()
+
+        projects            = Project.objects.filter(user=request.user).order_by("-dt")
+        paginator           = Paginator(projects,LIST_PER_PAGE)
+
+        if "project_page" in request.GET:
+            context["projects"] = paginator.get_page(request.GET["project_page"])
+        else:
+            context["projects"] = paginator.get_page(1)
+
+    
+        # TODO: 多対多のフィールドに含まれているかチェックするにはこれで良いのか？
+        communities         = Community.objects.filter(members=request.user).order_by("-dt")
+        paginator           = Paginator(communities,LIST_PER_PAGE)
+
+        if "community_page" in request.GET:
+            context["communities"]  = paginator.get_page(request.GET["community_page"])
+        else:
+            context["communities"]  = paginator.get_page(1)
+
 
         return render(request, "diy/mypage.html", context)
 
@@ -299,6 +353,24 @@ class UserView(View):
 
         context             = {}
         context["user"]     = CustomUser.objects.filter(id=pk).first()
+
+        projects            = Project.objects.filter(user=request.user).order_by("-dt")
+        paginator           = Paginator(projects,LIST_PER_PAGE)
+
+        if "project_page" in request.GET:
+            context["projects"] = paginator.get_page(request.GET["project_page"])
+        else:
+            context["projects"] = paginator.get_page(1)
+
+    
+        # TODO: 多対多のフィールドに含まれているかチェックするにはこれで良いのか？
+        communities         = Community.objects.filter(members=request.user).order_by("-dt")
+        paginator           = Paginator(communities,LIST_PER_PAGE)
+
+        if "community_page" in request.GET:
+            context["communities"]  = paginator.get_page(request.GET["community_page"])
+        else:
+            context["communities"]  = paginator.get_page(1)
 
         return render(request, "diy/user.html", context)
 

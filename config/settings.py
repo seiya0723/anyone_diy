@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "diy.apps.DiyConfig",
+    "diy.templatetags.param_change",
     "users.apps.UsersConfig",
 
     "django_summernote",

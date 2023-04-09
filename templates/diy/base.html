@@ -19,9 +19,7 @@
 <body>
 
     <header class="header_area">
-
         <h1 class="header_title"><a href="{% url 'diy:index' %}">自作の達人</a></h1>
-        
         {% if request.user.is_authenticated %}
         <a class="header_icon" href="{% url 'account_logout' %}">ログアウト</a>
         <a class="header_icon" href="{% url 'diy:mypage' %}">マイページ</a>

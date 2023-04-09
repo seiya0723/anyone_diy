@@ -5,9 +5,19 @@
 {% endblock %}
 
 {% block main %}
-
-
 <h2 class="project_title">{{ project.title }}</h2>
+
+<div class="project_status_area">
+    <div class="project_status">
+        <div>投稿日時: {{ project.dt }}</div>
+        <div>投稿者: <a href="">{{ project.user.handle_name }}</a></div>
+        <div>カテゴリ: <a href="">{{ project.category.name }}</a></div>
+    </div>
+    <div class="project_status">
+        <div>所要時間: {{ project.time }}分</div>
+        <div>作業難度: {{ project.level }}</div>
+    </div>
+</div>
 
 <div class="project_thumbnail_area">
     {% if project.thumbnail %}
@@ -17,28 +27,71 @@
     {% endif %}
 </div>
 
+<div class="project_content_area">
 
-<div>{{ project.dt           }}</div>
-<div>{{ project.category     }}</div>
-<div>{{ project.description  }}</div>
-<div>{{ project.time         }}</div>
-<div>{{ project.level        }}</div>
-<div>{{ project.user         }}</div>
+    <div class="project_content">
+        <h3 class="project_subtitle">作業工程</h3>
+        <div>{{ project.process|safe }}</div>
+    </div>
+    <div class="project_content">
+        <h3 class="project_subtitle">説明</h3>
+        <div>{{ project.description|urlize|linebreaksbr  }}</div>
+        <h3 class="project_subtitle">材料</h3>
+        {% for material in materials %}
+        <div>{{ material }}</div>
+        {% endfor %}
+    </div>
 
+</div>
 
+<div class="project_feedback_area">
 
-<h2>材料</h2>
+    <div class="project_feedback">
+        <h3 class="project_subtitle">投稿されたフィードバック</h3>
+        {% if feedback %}
+            {% for feedback in feedbacks %}
+            <div>{{ feedback.star }}</div>
+            {% endfor %}
 
-{% for material in materials %}
-<div>{{ material }}</div>
-{% endfor %}
+            {% include "diy/particle/paginator.html" with data=feedbacks param="feedback_page" %}
 
-<h2>作業工程</h2>
+        {% else %}
+        <div>フィードバックはありません。</div>
+        {% endif %}
 
-<div>{{ project.process|safe }}</div>
+    </div>
+    <div class="project_feedback">
+        <h3 class="project_subtitle">フィードバックを投稿する</h3>
 
+        {% if request.user.is_authenticated %}
+        <form action="{% url 'diy:project_single' project.id %}" method="post">
+            {% csrf_token %}
 
+            <div>
+                <input id="star_radio_1" type="radio" name="star" value="1">
+                <input id="star_radio_2" type="radio" name="star" value="2">
+                <input id="star_radio_3" type="radio" name="star" value="3">
+                <input id="star_radio_4" type="radio" name="star" value="4">
+                <input id="star_radio_5" type="radio" name="star" value="5">
+                <div class="star_radio_label_area">
+                    <div class="star_radio_label_flex">
+                        <label class="star_radio_label" for="star_radio_5"><div class="true_star" ><i class="fas fa-star"></i></div><div class="false_star"><i class="far fa-star"></i></div></label>
+                        <label class="star_radio_label" for="star_radio_4"><div class="true_star" ><i class="fas fa-star"></i></div><div class="false_star"><i class="far fa-star"></i></div></label>
+                        <label class="star_radio_label" for="star_radio_3"><div class="true_star" ><i class="fas fa-star"></i></div><div class="false_star"><i class="far fa-star"></i></div></label>
+                        <label class="star_radio_label" for="star_radio_2"><div class="true_star" ><i class="fas fa-star"></i></div><div class="false_star"><i class="far fa-star"></i></div></label>
+                        <label class="star_radio_label" for="star_radio_1"><div class="true_star" ><i class="fas fa-star"></i></div><div class="false_star"><i class="far fa-star"></i></div></label>
+                    </div>
+                </div>
+            </div>
+            <textarea name="comment" placeholder="ここにフィードバックを入力してください"></textarea>
+            <input type="submit" value="送信">
+        </form>
+        {% else %}
+        <div>フィードバックを投稿するには、<a href="{% url 'account_login' %}">ログイン</a>してください。</div>
+        {% endif %}
 
+    </div>
+</div>
 {% endblock %}
 
 
