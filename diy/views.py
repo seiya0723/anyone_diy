@@ -68,8 +68,7 @@ class ProjectView(View):
 
         
         # 投稿する内容
-        context["form"]     = ProjectForm()
-
+        context["form"]         = ProjectForm()
         context["categories"]   = Category.objects.order_by("-dt")
 
 

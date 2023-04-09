@@ -12,6 +12,8 @@
     <link rel="icon" href="{% static 'diy/image/favicon02.png' %}">
     <link rel="stylesheet" href="{% static 'diy/css/base.css' %}">
 
+    <script src="{% static 'diy/js/script.js' %}"></script>
+
     {% block extra_head %}
     {% endblock %}
 
@@ -19,14 +21,17 @@
 <body>
 
     <header class="header_area">
-        <h1 class="header_title"><a href="{% url 'diy:index' %}">自作の達人</a></h1>
-        {% if request.user.is_authenticated %}
-        <a class="header_icon" href="{% url 'account_logout' %}">ログアウト</a>
-        <a class="header_icon" href="{% url 'diy:mypage' %}">マイページ</a>
-        {% else %}
-        <a class="header_icon" href="{% url 'account_login' %}">ログイン</a>
-        <a class="header_icon" href="{% url 'account_signup' %}">新規登録</a>
-        {% endif %}
+        <h1 class="header_title_area"><a class="header_title" href="{% url 'diy:index' %}">自作の達人</a></h1>
+
+        <div class="header_icon_area">
+            {% if request.user.is_authenticated %}
+            <a class="header_icon color_info" href="{% url 'diy:mypage' %}"><i class="fa-solid fa-house"></i></a>
+            <a class="header_icon color_danger" href="{% url 'account_logout' %}"><i class="fa-solid fa-door-open"></i></a>
+            {% else %}
+            <a class="header_icon color_success" href="{% url 'account_login' %}"><i class="fa-solid fa-right-to-bracket"></i></a>
+            <a class="header_icon color_info" href="{% url 'account_signup' %}"><i class="fa-solid fa-user-plus"></i></a>
+            {% endif %}
+        </div>
     </header>
 
     <main>

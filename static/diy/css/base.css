@@ -24,39 +24,50 @@ body{
 }
 img { max-width:100%; }
 
-h1 { }
-h2 { }
-h3 { }
-h4 { }
-h5 { }
-h6 { }
+h1 { margin:0;background:var(--light-green);padding:0.5rem 0; }
+h2 { margin:0;background:var(--gray);color:white;padding:0.5rem 0; }
+h3 { margin:0; }
+h4 { margin:0; }
+h5 { margin:0; }
+h6 { margin:0; }
+
+.color_danger{ color: var(--gray); }
+.color_success{ color: var(--light-green); }
+.color_info{ color: var(--orange); }
 
 a {
     text-decoration:none;
-    color:var(--gray);
+    color:inherit;
 }
-
 
 /* header_area */
 .header_area{
     display:flex;
+    background:var(--light-green);
+    padding:0.25rem 0;
+}
+.header_title_area{
+    width:calc(100% - 5rem);
 }
 .header_title{
-    width:80%;
+    color:white;
 }
-.header_icon{
-    width:10%;
+.header_icon_area{
+    width:5rem;
+    font-size:2rem;
 }
 
+
+
+/* content_areaは作り直し */
+/* display:flexの高さを合わせるやつを使う。フィードバック件数と平均点、難易度と作業時間も入れておく。*/
 
 /* content_area */
-
 .content_area{
     display:flex;
     flex-wrap:wrap;
 
     justify-content:center;
-
 }
 .content{
     width:  calc(100vw / 5 - 1rem);
@@ -87,7 +98,6 @@ a {
     /* TODO:できれば画像のアスペクト比を維持した状態で表示させたい。 */
     width:  calc(100vw / 5 - 1rem);
     height: calc(100vw / 5 - 1rem);
-
 }
 
 .content_thumbnail_area:hover .content_thumbnail{
@@ -129,7 +139,6 @@ a {
     .content_readmore_area{
         text-align:center;
     }
-
 }
 
 
@@ -137,7 +146,6 @@ a {
 /* project single */
 .project_title {
     padding:0.5rem;
-    background:var(--light-green);
 }
 
 .project_subtitle{
