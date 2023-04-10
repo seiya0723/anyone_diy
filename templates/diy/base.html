@@ -9,6 +9,9 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+
     <link rel="icon" href="{% static 'diy/image/favicon02.png' %}">
     <link rel="stylesheet" href="{% static 'diy/css/base.css' %}">
 
@@ -28,7 +31,7 @@
             <a class="header_icon color_info" href="{% url 'diy:mypage' %}"><i class="fa-solid fa-house"></i></a>
             <a class="header_icon color_danger" href="{% url 'account_logout' %}"><i class="fa-solid fa-door-open"></i></a>
             {% else %}
-            <a class="header_icon color_success" href="{% url 'account_login' %}"><i class="fa-solid fa-right-to-bracket"></i></a>
+            <a class="header_icon color_normal" href="{% url 'account_login' %}"><i class="fa-solid fa-right-to-bracket"></i></a>
             <a class="header_icon color_info" href="{% url 'account_signup' %}"><i class="fa-solid fa-user-plus"></i></a>
             {% endif %}
         </div>

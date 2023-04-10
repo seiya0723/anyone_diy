@@ -5,26 +5,53 @@
 
 {% block main %}
 
-<h2>{{ community_topic.title }}</h2>
 
-{% if community_messages %}
-    {% for community_message in community_messages %}
-    <div>投稿日時: {{ community_message.dt }}</div>
-    <div>投稿者: {{ community_message.user.handle_name }}</div>
-    <div>{{ community_message.comment|safe }}</div>
-    {% endfor %}
-    {% include "diy/particle/paginator.html" with data=community_messages param="community_message_page" %}
-{% else %}
-    <div>まだメッセージが投稿されていません。</div>
-{% endif %}
+<h2><a href="{% url 'diy:community_single' community_topic.community.id  %}">{{ community_topic.community }}</a> > {{ community_topic.title }}</h2>
 
-<h2>メッセージを投稿する</h2>
 
-<form action="" method="POST">
-    {% csrf_token %}
-    {{ form.comment }}
-    <input type="submit" value="送信">
-</form>
+<div class="topic_area">
+
+    <div class="topic_content">
+        <h3>メッセージ一覧</h3>
+        {% if community_messages %}
+            {% for community_message in community_messages %}
+            <div class="topic_message_area">
+                <div class="topic_message_status_area">
+                    <div class="topic_message_status">投稿日時: {{ community_message.dt }}</div>
+                    <div class="topic_message_status">投稿者: <a href="{% url 'diy:user' community_message.user.id %}">{{ community_message.user.handle_name }}</a></div>
+                </div>
+                <div class="topic_message">{{ community_message.comment|safe }}</div>
+                
+                {% if community_message.user == request.user or community_message.community_topic.user == request.user %}
+                <div class="topic_message_control_area">
+                    {% if community_message.user == request.user %}
+                    <div class="topic_message_control">
+                        <div class="message_edit">編集する</div>
+                    </div>
+                    {% endif %}
+                    <div class="topic_message_control">
+                        <div class="message_delete">削除する</div>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+            {% include "diy/particle/paginator.html" with data=community_messages param="community_message_page" %}
+        {% else %}
+            <div>まだメッセージが投稿されていません。</div>
+        {% endif %}
+    </div>
+    <div class="topic_content">
+        <h3>メッセージを投稿する</h3>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.comment }}
+            <input type="submit" value="送信">
+        </form>
+    </div>
+</div>
+
 
 {% endblock %}
 

@@ -22,6 +22,17 @@ body{
     /* ここにフォントを入れる？ 自作の達人←太鼓の達人みたいな柔らかめのフォント？ */
 
 }
+
+/* 余白をつけたい */
+/*
+main{
+    max-width:1240px;
+    margin:auto;
+}
+*/
+
+
+
 img { max-width:100%; }
 
 h1 { margin:0;background:var(--light-green);padding:0.5rem 0; }
@@ -32,8 +43,9 @@ h5 { margin:0; }
 h6 { margin:0; }
 
 .color_danger{ color: var(--gray); }
-.color_success{ color: var(--light-green); }
+.color_success{ color: var(--green); }
 .color_info{ color: var(--orange); }
+.color_normal{ color: white;}
 
 a {
     text-decoration:none;
@@ -121,7 +133,7 @@ a {
     display:inline-block;
     padding:0.5rem 3rem;
     margin:0.5rem;
-    border-radius:2rem;
+    border-radius:0.5rem;
     border:solid 0.2rem var(--orange);
     transition: 0.2s;
 }
@@ -144,59 +156,216 @@ a {
 
 
 /* project single */
-.project_title {
-    padding:0.5rem;
+
+
+.project_header_area{
+
+    margin:1rem 0;
+    display:flex;
+    flex-wrap:wrap;
 }
 
-.project_subtitle{
-    text-align:center;
-    font-size:1.5rem;
+.project_header{
+    width:calc(100% / 2);
 
+}
+
+
+.project_title {
+    padding:0.5rem;
+    font-size:1.5rem;
 }
 
 .project_thumbnail_area{
     text-align:center;
 }
-
 .project_status_area{
     font-size:0.9rem;
+    margin:0 2rem;
+    padding:0.25rem;
+}
+.project_status{
+    display:inline-block;
 
-    width:calc(100% - 3rem);
-    margin:auto;
-
+    margin:0 0.25rem;
 }
 
+
+.project_control_area {
+    display:flex;
+    flex-wrap:wrap;
+}
+
+.project_control{
+    width:calc(100% / 2);
+}
+.project_control_favorite{
+    margin:0.5rem;
+    padding:1rem;
+    text-align:center;
+    border:solid 0.2rem var(--orange);
+    border-radius:0.5rem;
+    cursor:pointer;
+}
+
+.project_control_admin{
+    display:flex;
+    flex-wrap:wrap;
+}
+.project_control_admin_content{
+    width:calc(100% / 2);
+}
+.project_control_admin_content > div{
+    margin:0.5rem;
+    padding:1rem;
+    text-align:center;
+    border-radius:0.5rem;
+    cursor:pointer;
+}
+.project_control_edit{ border:solid 0.2rem var(--light-green); }
+.project_control_delete{ border:solid 0.2rem crimson; }
+
+.project_description{
+    font-size:1.2rem;
+    margin:0.5rem;
+}
+
+
+
+.project_subtitle{
+    font-size:1.25rem;
+}
 
 .project_content_area{
     display:flex;
     flex-wrap:wrap;
 }
-.project_content{
-    width:calc(100% / 2);
+.project_content_right{
+    width:calc(100% / 3 );
 }
+.project_content_left{
+    width:calc(100% / 3*2);
+}
+
+/* 作業工程内の装飾 */
+.project_process{
+    margin:0.5rem;
+    padding:1rem;
+    border:solid 0.2rem var(--light-green);
+
+    border-radius:0.5rem;
+}
+
+.project_process h1 {}
+.project_process h2 {}
+.project_process h3 {}
+.project_process h4 {}
+.project_process h5 {}
+.project_process h6 {}
+
+
 
 .project_feedback_area{
     display:flex;
     flex-wrap:wrap;
 }
-.project_feedback{
-    width:calc(100% / 2);
+.project_feedback_right{
+    width:calc(100% / 3);
 }
-
+.project_feedback_left{
+    width:calc(100% / 3 * 2);
+}
 
 .material_area{
     display:flex;
     flex-wrap:wrap;
+    font-size:1.1rem;
+    margin:0.5rem 1rem;
 }
 .material_content{
-    font-size:1.2rem;
     text-align:center;
+    width:calc(100% / 2);
+}
+.material_header{
+    font-weight:bold;
+    font-size:1.5rem;
+    border-bottom:solid 0.25rem white;
+}
+.material_content_inner{
+    padding:0.25rem;
+}
+.material_content_inner_right{ color:white;background:var(--green);}
+.material_content_inner_left { color:white;background:var(--gray); } 
+
+
+
+
+
+/* community */ 
+
+.topic_area{
+    display:flex;
+    flex-wrap:wrap;
+}
+.topic_content{
     width:calc(100% / 2);
 }
 
 
+.topic_message_area {
+    margin: 0.5rem;
+    padding: 1rem;
+    border: solid 0.2rem var(--light-green);
+    border-radius: 0.5rem;
+}
+.topic_message_status_area{
+    font-size:0.9rem;
+}
+.topic_message_status{
+    display:inline-block;
+}
+.topic_message{
+
+    padding:1rem;
+
+}
 
 
+
+
+.topic_message_control_area{
+    display:flex;
+    flex-wrap:wrap;
+}
+
+.topic_message_control{ 
+    width:calc(100% / 2);
+    text-align:center;
+    cursor:pointer;
+}
+.message_edit{
+    padding:0.5rem;
+    border:solid 0.2rem var(--light-green);
+}
+.message_delete{
+    padding:0.5rem;
+    border:solid 0.2rem crimson;
+}
+
+
+.project_control_edit{ border:solid 0.2rem var(--light-green); }
+.project_control_delete{ border:solid 0.2rem crimson; }
+
+
+/* feedback */
+
+.feedback_status{
+    font-size:0.9rem;
+    
+}
+.feedback_comment{
+    margin:0 1rem;
+}
 
 
 
@@ -330,10 +499,59 @@ label[for="star_radio_5"]:hover ~ label[for="star_radio_1"] > .false_star{ displ
 }
 .page_item{}
 .page_link{
-    padding:0.75rem;
+    padding:0.5rem 1rem;
     margin:0.25rem;
     border-radius:0.25rem;
     border:solid 0.2rem var(--orange);
+}
+
+
+
+
+
+
+/* form tag */
+
+input[type="submit"], input[type="button"]{
+  display: inline-block;
+  height: calc(1.5em + .75rem + 2px);
+  padding:0.25rem 1.5rem;
+  margin:0.25rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--gray);
+  background-clip: padding-box;
+  border: 1px solid var(--gray);
+  border-radius: .25rem;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  cursor:pointer;
+}
+input[type="text"], input[type="number"], select{
+  display: inline-block;
+  height: calc(1.5em + .75rem + 2px);
+  margin:0.25rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--gray);
+  background-clip: padding-box;
+  border: 1px solid var(--gray);
+  border-radius: .25rem;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+textarea{
+    overflow: auto;
+    resize: vertical;
+    display: block;
+    width: 90%;
+    margin: 0.5rem 0;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--gray);
+    background-clip: padding-box;
+    border: 1px solid var(--gray);
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
 

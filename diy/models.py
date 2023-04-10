@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator,MaxValueValidator
 from django.conf import settings
 
+from django.db.models import Avg
+
 import uuid
 
 MAX_STAR    = 5
@@ -165,9 +167,8 @@ class Community(models.Model):
     dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
     name        = models.CharField(verbose_name="コミュニティ名",max_length=20)
 
-    
     #TODO:コミュニティにもサムネイルを
-
+    thumbnail   = models.ImageField(verbose_name="サムネイル",upload_to="diy/community/thumbnail",null=True,blank=True)
 
     user        = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", verbose_name="投稿者",on_delete=models.CASCADE)
     members     = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="+", verbose_name="メンバー")
@@ -184,6 +185,8 @@ class CommunityTopic(models.Model):
     id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
     dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
     title       = models.CharField(verbose_name="タイトル",max_length=20)
+
+    thumbnail   = models.ImageField(verbose_name="サムネイル",upload_to="diy/topic/thumbnail",null=True,blank=True)
 
     community   = models.ForeignKey(Community,verbose_name="コミュニティ",on_delete=models.CASCADE)
     user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)

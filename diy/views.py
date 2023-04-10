@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 
 # DRF
-# from rest_framework.views import APIView as View
+#from rest_framework.views import APIView as View
 
 # 検索+ページネーション
 from django.db.models import Q
@@ -72,7 +72,6 @@ class ProjectView(View):
         context["categories"]   = Category.objects.order_by("-dt")
 
 
-
         return render(request, "diy/project.html", context)
 
     def post(self, request, *args, **kwargs):
@@ -112,6 +111,109 @@ class ProjectView(View):
         return redirect("diy:project")
 
 project = ProjectView.as_view()
+
+
+# TODO:【審議中】 これ、作るべきか？ ← プロジェクト新規作成フォームはどこに書く？
+# ↑ マイページか、プロジェクト一覧ページにCSSのモーダルでも良いのでは？
+#　↑　そもそもコミュニティの作成フォームもマイページに表示すれば良いのでは？
+class ProjectCreateView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        return render(request, "diy/project_create.html")
+
+    def post(self, request, *args, **kwargs):
+        # ここでプロジェクトの投稿を受け付ける
+        # プロジェクトの投稿とプロジェクトに紐づく素材の保存もセットでやる。
+        # .getlist()を使う。
+
+        copied          = request.POST.copy()
+        copied["user"]  = request.user
+
+        form    = ProjectForm(copied)
+
+        if not form.is_valid():
+            messages.error(request, "プロジェクトの投稿に失敗しました")
+            return redirect("diy:project")
+
+        project         = form.save()
+
+        # 素材を使用しないプロジェクトの場合はMaterialの追加はせず終了する。
+        names   = request.POST.getlist("name")
+        amounts = request.POST.getlist("amount")
+
+        for name,amount in zip(names, amounts):
+            dic = {}
+            dic["name"]     = name
+            dic["amount"]   = amount
+            dic["project"]  = project
+            dic["user"]     = request.user
+
+            form    = MaterialForm(dic)
+
+            if form.is_valid():
+                form.save()
+
+        messages.success(request, "プロジェクトの投稿に成功しました")
+
+        return redirect("diy:project_create")
+
+project_create  = ProjectCreateView.as_view()
+
+
+# プロジェクトの編集・削除を受け付ける
+class ProjectModView(LoginRequiredMixin,View):
+
+    def get(self, request, pk, *args, **kwargs):
+
+        context = {}
+        project = Project.objects.filter(id=pk, user=request.user).first()
+
+        if not project:
+            messages.error(request, "プロジェクトがありません")
+            return redirect("diy:index")
+
+        context["project"]  = project
+
+        return render(request, "diy/project_mod.html", context)
+
+
+    def post(self, request, pk, *args, **kwargs):
+        data    = {}
+        project = Project.objects.filter(id=pk, user=request.user).first()
+
+        if not project:
+            messages.error(request, "プロジェクトの編集に失敗しました")
+            return JsonResponse(data)
+
+        copied          = request.POST.copy()
+        copied["user"]  = request.user
+
+        form    = ProjectForm(copied, instance=project)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "プロジェクトの編集に成功しました")
+        else:
+            messages.error(request, "プロジェクトの編集に失敗しました")
+
+
+        ## TODO:素材の編集処理はどう実現させる？ ← また別途ビューを作るか？
+
+        return JsonResponse(data)
+
+    def delete(self, request, pk, *args, **kwargs):
+
+        data    = {}
+        project = Project.objects.filter(id=pk, user=request.user).first()
+
+        if project:
+            project.delete()
+            messages.success(request, "プロジェクトの削除に成功しました")
+        else:
+            messages.error(request, "プロジェクトの削除に失敗しました")
+
+        return JsonResponse(data)
+
+project_mod     = ProjectModView.as_view()
 
 
 # プロジェクトの個別ページ
@@ -246,6 +348,8 @@ class CommunitySingleView(View):
             context["community_topics"]  = paginator.get_page(1)
 
 
+        print(context["community_topics"])
+
         return render(request, "diy/community_single.html", context)
 
     def post(self, request, pk, *args, **kwargs):
@@ -333,6 +437,15 @@ class MypageView(LoginRequiredMixin, View):
             context["communities"]  = paginator.get_page(1)
 
 
+        favorites           = Favorite.objects.filter(user=request.user).order_by("-dt")
+        paginator           = Paginator(favorites,LIST_PER_PAGE)
+
+        if "favorite_page" in request.GET:
+            context["favorites"] = paginator.get_page(request.GET["favorite_page"])
+        else:
+            context["favorites"] = paginator.get_page(1)
+
+
         return render(request, "diy/mypage.html", context)
 
     def post(self, request, *args, **kwargs):
@@ -365,7 +478,6 @@ class UserView(View):
         else:
             context["projects"] = paginator.get_page(1)
 
-    
         # TODO: 多対多のフィールドに含まれているかチェックするにはこれで良いのか？
         communities         = Community.objects.filter(members=request.user).order_by("-dt")
         paginator           = Paginator(communities,LIST_PER_PAGE)
@@ -377,8 +489,59 @@ class UserView(View):
 
         return render(request, "diy/user.html", context)
 
-    #TODO:後にここにダイレクトメッセージ機能でも実装するか？
-
-
 user    = UserView.as_view()
 
+
+# お気に入りフォルダ機能のオミット検討中
+class FavoriteFolderView(LoginRequiredMixin,View):
+
+    def get(self, request, *args, **kwargs):
+
+        return render(request, "diy/favorite_folder.html")
+
+    def post(self, request, *args, **kwargs):
+        #TODO:お気に入りフォルダの新規作成。
+        return redirect("diy:favorite_folder")
+
+    def delete(self, request, *args, **kwargs):
+        #TODO: お気に入りフォルダの削除
+        return redirect("diy:favorite_folder")
+
+favorite_folder = FavoriteFolderView.as_view()
+
+
+
+
+class FavoriteView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        data    = {}
+
+        copied          = request.POST.copy()
+        copied["user"]  = request.user
+
+        form    = FavoriteForm(copied)
+
+        if form.is_valid():
+
+            cleaned     = form.clean()
+            # すでに存在する場合は削除する(お気に入り解除)
+            favorites   = Favorite.objects.filter(project=cleaned["project"])
+
+            if favorites:
+                messages.success(request, "お気に入り解除しました！")
+                favorites.delete()
+            else:
+                form.save()
+                messages.success(request, "お気に入り登録しました！")
+
+        else:
+            messages.success(request, "お気に入り登録失敗しました")
+
+        return JsonResponse(data)
+    
+    # オミット検討中
+    def patch(self, request, *args, **kwargs):
+        #TODO:指定したお気に入りフォルダへ移動させる
+        return redirect("bbs:index")
+
+favorite    = FavoriteView.as_view()

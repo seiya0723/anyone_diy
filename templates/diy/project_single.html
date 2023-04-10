@@ -5,51 +5,99 @@
 {% endblock %}
 
 {% block main %}
-<h2 class="project_title">{{ project.title }}</h2>
 
-<div class="project_status_area">
-    <div class="project_status">
-        <div>投稿日時: {{ project.dt }}</div>
-        <div>投稿者: <a href="">{{ project.user.handle_name }}</a></div>
-        <div>カテゴリ: <a href="">{{ project.category.name }}</a></div>
+
+<div class="project_header_area">
+
+    <div class="project_header">
+        <div class="project_thumbnail_area">
+            {% if project.thumbnail %}
+            <img class="project_thumbnail" src="{{ project.thumbnail.url }}" alt="">
+            {% else %}
+            <img class="project_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
+            {% endif %}
+        </div>
     </div>
-    <div class="project_status">
-        <div>所要時間: {{ project.time }}分</div>
-        <div>作業難度: {{ project.level }}</div>
+    <div class="project_header">
+        <h2 class="project_title">{{ project.title }}</h2>
+        <div class="project_status_area">
+            <div class="project_status">投稿日時: {{ project.dt }}</div>
+            <div class="project_status">投稿者: <a href="{% url 'diy:user' project.user.id %}">{{ project.user.handle_name }}</a></div>
+            <div class="project_status">カテゴリ: <a href="">{{ project.category.name }}</a></div>
+            <div class="project_status">所要時間: {{ project.time }}分</div>
+            <div class="project_status">作業難度: {{ project.level }}</div>
+            <div class="project_status">フィードバック: 
+                {% with range=''|center:project.avg_star_score  %}
+                {% for x in range %}<i class="fa-solid fa-star"></i>{% endfor %}
+                {% endwith %}
+                {% if project.avg_star_icon_few == 1 %}<i class="fa-solid fa-star"></i>{% elif project.avg_star_icon_few == 0.5 %}<i class="fa-solid fa-star-half"></i>{% endif %}
+                ({{ project.feedback_amount }})
+            </div>
+        </div>
+
+        {# ここにレビューとお気に入り登録と編集・削除を行うことができるようにする。#}
+        <div class="project_control_area">
+
+            <div class="project_control">
+                <form action="{% url 'diy:favorite' %}" method="POST" class="project_control_favorite">
+                    {% csrf_token %}
+                    <input type="hidden" name="project" value="{{ project.id }}">
+                    <div id="add_favorite">お気に入り登録</div>
+                </form>
+            </div>
+            {% if project.user == request.user %}
+            <div class="project_control">
+                <div class="project_control_admin">
+                    {# TODO: ここで編集ページ、削除ページへジャンプする。 #}
+                    <div class="project_control_admin_content"><div class="project_control_edit">編集</div></div>
+                    <div class="project_control_admin_content"><div class="project_control_delete">削除</div></div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+
+        <div class="project_description">{{ project.description|urlize|linebreaksbr  }}</div>
+        
+
     </div>
+
 </div>
 
-<div class="project_thumbnail_area">
-    {% if project.thumbnail %}
-    <img class="project_thumbnail" src="{{ project.thumbnail.url }}" alt="">
-    {% else %}
-    <img class="project_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
-    {% endif %}
-</div>
 
+<hr>
+
+
+{# TODO:ここはFlexにしなくても良いかも#}
 <div class="project_content_area">
 
-    <div class="project_content">
-        <h3 class="project_subtitle">作業工程</h3>
-        <div>{{ project.process|safe }}</div>
-    </div>
-    <div class="project_content">
-        <h3 class="project_subtitle">説明</h3>
-        <div>{{ project.description|urlize|linebreaksbr  }}</div>
+    <div class="project_content_right">
         <h3 class="project_subtitle">材料</h3>
-        {% for material in materials %}
         <div class="material_area">
-            <div class="material_content">{{ material.name }}</div>
-            <div class="material_content">{{ material.amount }}</div>
+            <div class="material_content material_header"><div class="material_content_inner material_content_inner_right">素材名</div></div>
+            <div class="material_content material_header"><div class="material_content_inner material_content_inner_left">数量</div></div>
+            {% for material in materials %}
+            <div class="material_content"><div class="material_content_inner material_content_inner_right">{{ material.name   }}</div></div>
+            <div class="material_content"><div class="material_content_inner material_content_inner_left">{{ material.amount }}</div></div>
+            {% empty %}
+            <div class="material_content"><div class="material_content_inner material_content_inner_right">なし</div></div>
+            <div class="material_content"><div class="material_content_inner material_content_inner_left">なし</div></div>
+            {% endfor %}
         </div>
-        {% endfor %}
+    </div>
+    <div class="project_content_left">
+        <h3 class="project_subtitle">作業工程</h3>
+        <div class="project_process">{{ project.process|safe }}</div>
     </div>
 
 </div>
+
+<hr>
+
 
 <div class="project_feedback_area">
 
-    <div class="project_feedback">
+    <div class="project_feedback_right">
         <h3 class="project_subtitle">フィードバックを投稿する</h3>
 
         {% if request.user.is_authenticated %}
@@ -78,9 +126,8 @@
         {% else %}
         <div>フィードバックを投稿するには、<a href="{% url 'account_login' %}">ログイン</a>してください。</div>
         {% endif %}
-
     </div>
-    <div class="project_feedback">
+    <div class="project_feedback_left">
         <h3 class="project_subtitle">投稿されたフィードバック</h3>
         {% if feedbacks %}
             {% for feedback in feedbacks %}
@@ -88,9 +135,11 @@
                 <span class="feedback_true_star">{% for s in feedback.star_icon.true_star %}<i class="fas fa-star"></i>{% endfor %}</span>
                 <span class="feedback_false_star">{% for s in feedback.star_icon.false_star %}<i class="far fa-star"></i>{% endfor %}</span>
             </div>
-            <div>投稿時間: {{ feedback.dt }}</div>
-            <div>投稿者: {{ feedback.user.handle_name }}</div>
-            <div>{{ feedback.comment }}</div>
+            <div class="feedback_status">
+                <div>投稿時間: {{ feedback.dt }}</div>
+                <div>投稿者: <a href="{% url 'diy:user' feedback.user.id %}">{{ feedback.user.handle_name }}</a></div>
+            </div>
+            <div class="feedback_comment">{{ feedback.comment|urlize|linebreaksbr }}</div>
             {% endfor %}
 
             {% include "diy/particle/paginator.html" with data=feedbacks param="feedback_page" %}

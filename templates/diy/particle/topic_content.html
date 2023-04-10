@@ -1,0 +1,20 @@
+{% load static %}
+
+<div class="content_area">
+    {% for topic in community_topics %}
+    <div class="content">
+        <a class="content_inner" href="{% url 'diy:community_topic' topic.id %}">
+            <div class="content_thumbnail_area">
+                {% if topic.thumbnail %}
+                <img class="content_thumbnail" src="{{ topic.thumbnail.url }}" alt="">
+                {% else %}
+                <img class="content_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
+                {% endif %}
+                <div class="content_title">{{ topic.title }}</div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+

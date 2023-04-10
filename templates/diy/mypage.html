@@ -9,12 +9,14 @@
 
 <form action="" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="text" name="first_name"  value="{{ request.user.first_name  }}">
-    <input type="text" name="last_name"   value="{{ request.user.last_name   }}">
-    <input type="text" name="handle_name" value="{{ request.user.handle_name }}">
-    <input type="file" name="icon">
+    <div>姓    :<input type="text" name="last_name"   value="{{ request.user.last_name   }}"></div>
+    <div>名    :<input type="text" name="first_name"  value="{{ request.user.first_name  }}"></div>
+    <div>ハンドルネーム:<input type="text" name="handle_name" value="{{ request.user.handle_name }}"></div>
+    <div>アイコン:<input type="file" name="icon"></div>
     {{ form.introduction }}
+
     <input type="submit" value="編集">
+
 </form>
 
 <h2>投稿したプロジェクト</h2>
@@ -22,11 +24,23 @@
 {% include "diy/particle/project_content.html" %}
 {% include "diy/particle/paginator.html" with data=projects param="project_page" %}
 
-
 <h2>参加中のコミュニティ</h2>
 
 {% include "diy/particle/community_content.html" %}
 {% include "diy/particle/paginator.html" with data=communities param="community_page" %}
+
+
+<h2>お気に入り</h2>
+
+{# TODO: お気に入り登録の管理ページへのリンクを作る。FavoriteFolderViewのGET #}
+
+{% include "diy/particle/favorite_content.html" %}
+{% include "diy/particle/paginator.html" with data=favorites param="favorite_page" %}
+
+<h2>有料会員登録</h2>
+
+
+
 
 
 {% endblock %}

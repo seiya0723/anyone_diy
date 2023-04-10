@@ -6,6 +6,12 @@ urlpatterns = [
     path(""                           , views.index               , name="index"            ),
     path("project/"                   , views.project             , name="project"          ),
     path("project_single/<uuid:pk>/"  , views.project_single      , name="project_single"   ),
+
+    path("project_create/"            , views.project_create      , name="project_create"   ),
+    path("project_mod/<uuid:pk>/"     , views.project_mod         , name="project_mod"      ),
+
+    path("favorite/"                  , views.favorite            , name="favorite"         ),
+
     path("community/"                 , views.community           , name="community"        ),
     path("community_single/<uuid:pk>/", views.community_single    , name="community_single" ),
     path("community_topic/<uuid:pk>/" , views.community_topic     , name="community_topic"  ),

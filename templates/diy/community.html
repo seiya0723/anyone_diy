@@ -7,7 +7,7 @@
 
 <h2>コミュニティ一覧</h2>
 
-{% include "diy/particle/search.html" %}
+{% include "diy/particle/search.html" with search="community" %}
 {% include "diy/particle/community_content.html" %}
 
 {% include "diy/particle/paginator.html" with data=communities param="community_page" %}

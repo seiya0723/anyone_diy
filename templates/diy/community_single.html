@@ -5,6 +5,16 @@
 
 {% block main %}
 
+<h2>{{ community.name }}</h2>
+
+<h2>トピック一覧</h2>
+
+{% if community_topics %}
+    {% include "diy/particle/topic_content.html" %}
+    {% include "diy/particle/paginator.html" with data=community_topics param="community_topic_page" %}
+{% else %}
+    <div>トピックはありません</div>
+{% endif %}
 
 <h2>トピックを新たに作る</h2>
 
@@ -14,17 +24,6 @@
     <input type="submit" value="作成">
 </form>
 
-
-<h2>トピック一覧</h2>
-
-{% if community_topics %}
-    {% for community_topic in community_topics %}
-    <div><a href="{% url 'diy:community_topic' community_topic.pk %}">{{ community_topic.title }}</a></div>
-    {% endfor %}
-    {% include "diy/particle/paginator.html" with data=communities param="community_topic_page" %}
-{% else %}
-    <div>トピックはありません</div>
-{% endif %}
 
 
 {% endblock %}

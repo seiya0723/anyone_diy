@@ -183,5 +183,6 @@ ALLOWED_TAGS = [
 ATTRIBUTES = {
     '*': ['style', 'align', 'title', ],
     'a': ['href', ],
+    'img': ['src', ],
 }
 
