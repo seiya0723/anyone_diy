@@ -125,7 +125,7 @@ class Feedback(models.Model):
         return dic
 
 
-
+# オミット予定
 class FavoriteFolder(models.Model):
 
     class Meta:

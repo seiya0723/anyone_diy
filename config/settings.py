@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
 
     "django_summernote",
+    "django_cleanup",
 
     'allauth',
     'allauth.account',

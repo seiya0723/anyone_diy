@@ -19,7 +19,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 from .models import Category,Project,Material,Feedback,Favorite,Community,CommunityTopic,CommunityMessage
-from .forms import CategoryForm,ProjectForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityTopicForm, CommunityMessageForm,CustomUserForm
+from .forms import CategoryForm,ProjectForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityTopicForm, CommunityMessageForm,CommunityMemberForm,CustomUserForm
 
 from users.models import CustomUser
 
@@ -113,52 +113,6 @@ class ProjectView(View):
 project = ProjectView.as_view()
 
 
-# TODO:【審議中】 これ、作るべきか？ ← プロジェクト新規作成フォームはどこに書く？
-# ↑ マイページか、プロジェクト一覧ページにCSSのモーダルでも良いのでは？
-#　↑　そもそもコミュニティの作成フォームもマイページに表示すれば良いのでは？
-class ProjectCreateView(LoginRequiredMixin,View):
-    def get(self, request, *args, **kwargs):
-        return render(request, "diy/project_create.html")
-
-    def post(self, request, *args, **kwargs):
-        # ここでプロジェクトの投稿を受け付ける
-        # プロジェクトの投稿とプロジェクトに紐づく素材の保存もセットでやる。
-        # .getlist()を使う。
-
-        copied          = request.POST.copy()
-        copied["user"]  = request.user
-
-        form    = ProjectForm(copied)
-
-        if not form.is_valid():
-            messages.error(request, "プロジェクトの投稿に失敗しました")
-            return redirect("diy:project")
-
-        project         = form.save()
-
-        # 素材を使用しないプロジェクトの場合はMaterialの追加はせず終了する。
-        names   = request.POST.getlist("name")
-        amounts = request.POST.getlist("amount")
-
-        for name,amount in zip(names, amounts):
-            dic = {}
-            dic["name"]     = name
-            dic["amount"]   = amount
-            dic["project"]  = project
-            dic["user"]     = request.user
-
-            form    = MaterialForm(dic)
-
-            if form.is_valid():
-                form.save()
-
-        messages.success(request, "プロジェクトの投稿に成功しました")
-
-        return redirect("diy:project_create")
-
-project_create  = ProjectCreateView.as_view()
-
-
 # プロジェクトの編集・削除を受け付ける
 class ProjectModView(LoginRequiredMixin,View):
 
@@ -171,10 +125,17 @@ class ProjectModView(LoginRequiredMixin,View):
             messages.error(request, "プロジェクトがありません")
             return redirect("diy:index")
 
-        context["project"]  = project
+        context["project"]      = project
+
+        context["materials"]    = Material.objects.filter(project=pk).order_by("dt")
+        context["categories"]   = Category.objects.order_by("-dt")
+        context["form"]         = ProjectForm(instance=project)
+
+        materials       = Material.objects.filter(project=pk, user=request.user).values_list("id", flat=True).order_by("dt")
+        print(materials)
+
 
         return render(request, "diy/project_mod.html", context)
-
 
     def post(self, request, pk, *args, **kwargs):
         data    = {}
@@ -191,14 +152,45 @@ class ProjectModView(LoginRequiredMixin,View):
 
         if form.is_valid():
             form.save()
-            messages.success(request, "プロジェクトの編集に成功しました")
         else:
             messages.error(request, "プロジェクトの編集に失敗しました")
 
+        #TODO: ロジックが複雑に付き後回し。
+        #TODO:素材の削除もここで引き受ける
+        # 素材の削除
+        # すでに存在する素材
+        materials       = Material.objects.filter(project=pk, user=request.user).order_by("dt")
+        print(materials)
+        material_ids    = request.POST.getlist("id")
+        print(material_ids)
 
-        ## TODO:素材の編集処理はどう実現させる？ ← また別途ビューを作るか？
 
-        return JsonResponse(data)
+        names           = request.POST.getlist("name")
+        amounts         = request.POST.getlist("amount")
+        
+        for material_id,name,amount in zip(material_ids, names, amounts):
+
+            # 存在しなければ新規作成になる
+            if material_id:
+                material    = Material.objects.filter(id=material_id, user=request.user).first()
+            else:
+                material    = None
+
+            dic             = {}
+            dic["name"]     = name
+            dic["amount"]   = amount
+            dic["project"]  = project
+            dic["user"]     = request.user
+
+            form    = MaterialForm(dic,instance=material)
+
+            if form.is_valid():
+                form.save()
+
+
+        messages.success(request, "プロジェクトの編集に成功しました")
+
+        return redirect("diy:project_mod", pk)
 
     def delete(self, request, pk, *args, **kwargs):
 
@@ -207,6 +199,7 @@ class ProjectModView(LoginRequiredMixin,View):
 
         if project:
             project.delete()
+            print("削除")
             messages.success(request, "プロジェクトの削除に成功しました")
         else:
             messages.error(request, "プロジェクトの削除に失敗しました")
@@ -223,9 +216,13 @@ class ProjectSingleView(View):
 
         #ここでプロジェクトの個別ページを表示。
         #フィードバックの一覧も表示
+        project     = Project.objects.filter(id=pk).first()
+
+        if not project:
+            return redirect("diy:project")
 
         context                 = {}
-        context["project"]      = Project.objects.filter(id=pk).first()
+        context["project"]      = project
         context["materials"]    = Material.objects.filter(project=pk).order_by("dt")
 
         feedbacks   = Feedback.objects.filter(project=pk).order_by("-dt")
@@ -237,10 +234,13 @@ class ProjectSingleView(View):
             context["feedbacks"]    = paginator.get_page(1)
 
 
+        context["is_favorite"]     = Favorite.objects.filter(project=pk, user=request.user).exists()
+
+
         return render(request, "diy/project_single.html", context)
 
     def post(self, request, pk, *args, **kwargs):
-        # TODO:ここでフィードバックを受け付ける
+        #ここでフィードバックを受け付ける
 
         copied              = request.POST.copy()
         copied["user"]      = request.user
@@ -257,11 +257,24 @@ class ProjectSingleView(View):
         return redirect("diy:project_single", pk)
 
     def delete(self, request, pk, *args, **kwargs):
-        pass
-    def put(self, request, pk, *args, **kwargs):
-        pass
-    def patch(self, request, pk, *args, **kwargs):
-        pass
+        # フィードバックの削除をする。
+        data        = {}
+        feedback    = Feedback.objects.filter(id=pk).first()
+        
+        if feedback.user == request.user:
+            # フィードバックの投稿者である
+            feedback.delete()
+            messages.success(request, "フィードバックを削除しました！")
+
+        elif feedback.project.user == request.user:
+            # プロジェクトの作成者である
+            feedback.delete()
+            messages.success(request, "フィードバックを削除しました！")
+
+        else:
+            messages.error(request, "フィードバックを削除に失敗しました")
+
+        return JsonResponse(data)
 
 project_single  = ProjectSingleView.as_view()
 
@@ -297,12 +310,17 @@ class CommunityView(View):
 
 
     def post(self, request, *args, **kwargs):
-        #TODO :ここでコミュニティの作成
+        #ここでコミュニティの作成
 
         copied              = request.POST.copy()
         copied["user"]      = request.user
 
-        form    = CommunityForm(copied)
+        # FIXME: 多対多のバリデーションおかしい。
+        # メンバーの追加はどうする？←とりあえず制作者だけ入れて、後から参加させる方式に
+        copied["members"]   = request.user
+        #copied["members"]  = [ str(request.user.id) ]
+
+        form    = CommunityForm(copied, request.FILES)
 
         if form.is_valid():
             messages.success(request, "コミュニティの作成を受け付けました！")
@@ -313,30 +331,91 @@ class CommunityView(View):
         return redirect("diy:community")
 
 
-    def delete(self, request, *args, **kwargs):
-        # コミュニティの削除
-        pass
-
-    def put(self, request, *args, **kwargs):
-        # コミュニティの編集
-        pass
-
-    def patch(self, request, *args, **kwargs):
-        # コミュニティに参加申請？
-        pass
-    
-
 community   = CommunityView.as_view()
 
 
+
+
+# コミュニティの参加申請・削除を受け付ける
+class CommunityModView(LoginRequiredMixin,View):
+
+    def delete(self, request, pk, *args, **kwargs):
+
+        data        = {}
+        community   = Community.objects.filter(id=pk, user=request.user).first()
+
+        if community:
+            community.delete()
+            messages.success(request, "コミュニティの削除に成功しました")
+        else:
+            messages.error(request, "コミュニティの削除に失敗しました")
+
+        return JsonResponse(data)
+
+    def patch(self, request, pk, *args, **kwargs):
+        # コミュニティに参加
+        data        = {}
+
+        community   = Community.objects.filter(id=pk).first()
+
+        if not community:
+            messages.error(request, "コミュニティがありません")
+            return JsonResponse(data)
+
+        
+        # FIXME: 多対多のバリデーションおかしい。
+        # CommunityViewのPOSTメソッドとこの参加処理の扱いに一貫性が無いのはなぜ？
+        # 仮説:新規作成時のバリデーションと違う？←いずれも同じだと思う
+        dic             = {}
+        dic["members"]  = [ str(request.user.id) ]
+        #dic["members"]   = request.user
+
+        form    = CommunityMemberForm(dic)
+
+        if not form.is_valid():
+            messages.error(request, "コミュニティの参加に失敗しました")
+            print(form.errors)
+            return JsonResponse(data)
+
+        cleaned         = form.clean()
+        members         = cleaned["members"] 
+
+        #https://noauto-nolife.com/post/django-m2m-search-and-add/
+        for member in members:
+
+            #このtagはTagモデルクラスのオブジェクト。追加する時はこうする。save()は実行しなくても良い
+            #https://stackoverflow.com/questions/1182380/how-to-add-data-into-manytomany-field
+
+            if member in community.members.all():
+                messages.success(request, "コミュニティから退会しました")
+                community.members.remove(member)
+            else:
+                messages.success(request, "コミュニティに参加しました")
+                community.members.add(member)
+
+        return JsonResponse(data)
+
+
+
+community_mod   = CommunityModView.as_view()
+
+
+
+
 # コミュニティ個別ページ
-class CommunitySingleView(View):
+class CommunitySingleView(LoginRequiredMixin,View):
 
     def get(self, request, pk, *args, **kwargs):
 
         #ここでコミュニティの個別ページを表示。コミュニティ内のトピックも表示
         context                     = {}
-        context["community"]        = Community.objects.filter(id=pk).first()
+
+        community                   = Community.objects.filter(id=pk).first()
+        if not community:
+            messages.error(request, "コミュニティがありません")
+            return redirect("diy:community")
+
+        context["community"]        = community
         community_topics            = CommunityTopic.objects.filter(community=pk).order_by("-dt")
 
         #TODO: 1ページに表示させるコンテンツ数は？
@@ -347,19 +426,18 @@ class CommunitySingleView(View):
         else:
             context["community_topics"]  = paginator.get_page(1)
 
-
-        print(context["community_topics"])
+        context["is_member"]        = Community.objects.filter(id=pk, members=request.user).exists()
 
         return render(request, "diy/community_single.html", context)
 
     def post(self, request, pk, *args, **kwargs):
-        #TODO :ここでコミュニティのトピックの作成
+        #ここでコミュニティのトピックの作成
 
         copied              = request.POST.copy()
         copied["community"] = pk
         copied["user"]      = request.user
 
-        form    = CommunityTopicForm(copied)
+        form    = CommunityTopicForm(copied, request.FILES)
 
         if form.is_valid():
             messages.success(request, "トピックの作成を受け付けました！")
@@ -369,16 +447,45 @@ class CommunitySingleView(View):
 
         return redirect("diy:community_single", pk)
 
+
+    def delete(self, request, pk, *args, **kwargs):
+
+        data    = {}
+
+        # コミュニティトピックの削除
+        topic = CommunityTopic.objects.filter(id=pk).first()
+
+        if topic:
+            # 投稿者自身もしくはトピックの作成者である。
+            if topic.user == request.user or topic.community.user == request.user:
+                topic.delete()
+                messages.success(request, "トピックを削除しました！")
+            else:
+                messages.error(request, "トピックの削除に失敗しました")
+        else:
+            messages.error(request, "トピックの削除に失敗しました")
+
+        return JsonResponse(data)
+
+
+
 community_single    = CommunitySingleView.as_view()
 
 
 # コミュニティトピックの個別ページ
-class CommunityTopicView(View):
+class CommunityTopicView(LoginRequiredMixin,View):
 
     def get(self, request, pk, *args, **kwargs):
 
         context                     = {}
-        context["community_topic"]  = CommunityTopic.objects.filter(id=pk).first()
+        topic                       = CommunityTopic.objects.filter(id=pk).first()
+
+        if not topic:
+            messages.error(request, "トピックがありません")
+            return redirect("diy:community")
+
+        context["community_topic"]  = topic
+
 
         community_messages  = CommunityMessage.objects.filter(community_topic=pk).order_by("-dt")
         paginator           = Paginator(community_messages,LIST_PER_PAGE)
@@ -408,6 +515,26 @@ class CommunityTopicView(View):
 
         return redirect("diy:community_topic", pk)
 
+    def delete(self, request, pk, *args, **kwargs):
+
+        data    = {}
+
+        ## コミュニティメッセージの削除
+        message = CommunityMessage.objects.filter(id=pk).first()
+
+        if message:
+            # 投稿者自身もしくはトピックの作成者である。
+            if message.user == request.user or message.community_topic.user == request.user:
+                message.delete()
+                messages.success(request, "メッセージを削除しました！")
+            else:
+                messages.error(request, "メッセージの削除に失敗しました")
+        else:
+            messages.error(request, "メッセージの削除に失敗しました")
+
+        return JsonResponse(data)
+
+
 community_topic     = CommunityTopicView.as_view()
 
 
@@ -415,8 +542,11 @@ community_topic     = CommunityTopicView.as_view()
 class MypageView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
 
-        context             = {}
-        context["form"]     = CustomUserForm()
+        context                     = {}
+        context["form"]             = CustomUserForm(instance=request.user)
+        context["project_form"]     = ProjectForm()
+
+        context["categories"]       = Category.objects.order_by("-dt")
 
         projects            = Project.objects.filter(user=request.user).order_by("-dt")
         paginator           = Paginator(projects,LIST_PER_PAGE)
@@ -426,7 +556,8 @@ class MypageView(LoginRequiredMixin, View):
         else:
             context["projects"] = paginator.get_page(1)
 
-    
+
+
         # TODO: 多対多のフィールドに含まれているかチェックするにはこれで良いのか？
         communities         = Community.objects.filter(members=request.user).order_by("-dt")
         paginator           = Paginator(communities,LIST_PER_PAGE)
@@ -479,6 +610,7 @@ class UserView(View):
             context["projects"] = paginator.get_page(1)
 
         # TODO: 多対多のフィールドに含まれているかチェックするにはこれで良いのか？
+        # TODO: ユーザーを増やしてチェック
         communities         = Community.objects.filter(members=request.user).order_by("-dt")
         paginator           = Paginator(communities,LIST_PER_PAGE)
 
@@ -493,6 +625,7 @@ user    = UserView.as_view()
 
 
 # お気に入りフォルダ機能のオミット検討中
+"""
 class FavoriteFolderView(LoginRequiredMixin,View):
 
     def get(self, request, *args, **kwargs):
@@ -508,7 +641,7 @@ class FavoriteFolderView(LoginRequiredMixin,View):
         return redirect("diy:favorite_folder")
 
 favorite_folder = FavoriteFolderView.as_view()
-
+"""
 
 
 
@@ -545,3 +678,5 @@ class FavoriteView(LoginRequiredMixin,View):
         return redirect("bbs:index")
 
 favorite    = FavoriteView.as_view()
+
+

@@ -41,6 +41,67 @@
 
 
 
+<h2>プロジェクトの作成</h2>
+
+<form action="{% url 'diy:project'  %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {# TODO: ここで使用する素材を書く。JavaScriptでフォームを追加できるようにする。 #}
+    <h3>必要な素材</h3>
+
+    <input id="add_material_form" type="button" value="＋ 素材フォーム">
+
+    <div id="material_form_area">
+        {% comment %}
+        <div class="material_form">
+            <input type="text" name="name" placeholder="素材名">
+            <input type="text" name="amount" placeholder="量">
+        </div>
+        {% endcomment %}
+    </div>
+
+    <h3>プロジェクト</h3>
+
+    <select name="category">
+        <option value="">カテゴリを選んでください</option>
+        {% for category in categories %}
+        <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="text" name="title" maxlength="20" required placeholder="タイトル">
+    <input type="file" name="thumbnail">
+
+    {# TODO: ここでレベル(レベルは5段階なので、アイコンで表現できないだろうか？)と所要時間のフォームを作っておく。#}
+    <input type="number" name="time" placeholder="所要時間">
+    <input type="number" name="level" placeholder="レベル">
+
+    <textarea name="description" placeholder="プロジェクトの説明"></textarea>
+
+    <h3>作業工程</h3>
+
+    {{ project_form.process }}
+
+    <input type="submit" value="送信"> 
+
+</form>
+
+<h2>コミュニティの作成</h2>
+
+{# TODO:後にここで有料会員限定に書き換える #}
+{% if request.user.is_authenticated %}
+<form action="{% url 'diy:community' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="text" name="name" required maxlength="20" placeholder="タイトル" >
+    <input type="file" name="thumbnail">
+    <input type="submit" value="送信">
+</form>
+{% else %}
+<div>コミュニティの作成は有料会員限定です。</div>
+{% endif %}
+
+
+
 
 
 {% endblock %}

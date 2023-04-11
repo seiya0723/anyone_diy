@@ -1,4 +1,5 @@
 {% extends "diy/base.html" %}
+{% load static %}
 
 {% block extra_head %}
 {% endblock %}
@@ -22,6 +23,7 @@
                 </div>
                 <div class="topic_message">{{ community_message.comment|safe }}</div>
                 
+                
                 {% if community_message.user == request.user or community_message.community_topic.user == request.user %}
                 <div class="topic_message_control_area">
                     {% if community_message.user == request.user %}
@@ -29,7 +31,8 @@
                         <div class="message_edit">編集する</div>
                     </div>
                     {% endif %}
-                    <div class="topic_message_control">
+                    <div class="topic_message_control topic_message_delete">
+                        <input class="topic_message_delete_url" type="hidden" value="{% url 'diy:community_topic' community_message.id %}">
                         <div class="message_delete">削除する</div>
                     </div>
                 </div>
@@ -43,11 +46,38 @@
         {% endif %}
     </div>
     <div class="topic_content">
+        
+        <h3>トピック</h3>
+        <div class="community_status_area">
+            <div class="community_status">作成日時: {{ community_topic.dt }}</div>
+            <div class="community_status">トピック作成者: <a href="{% url 'diy:user' community_topic.user.id %}">{{ community_topic.user.handle_name }}</a></div>
+        </div>
+
+        <div class="community_thumbnail_area">
+            {% if community_topic.thumbnail %}
+            <img class="community_thumbnail" src="{{ community_topic.thumbnail.url }}" alt="">
+            {% else %}
+            <img class="community_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
+            {% endif %}
+        </div>
+
+        {% if community_topic.user == request.user or community_topic.community.user == request.user %}
+        <div class="community_control">
+            <div id="community_topic_control_closer" class="community_control_closer">
+                <input id="community_topic_control_closer_url" type="hidden" value="{% url 'diy:community_single' community_topic.id %}">
+                削除する
+            </div>
+        </div>
+        {% endif %}
+
+
         <h3>メッセージを投稿する</h3>
         <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.comment }}
-            <input type="submit" value="送信">
+            <div class="text-right">
+                <input type="submit" value="送信">
+            </div>
         </form>
     </div>
 </div>

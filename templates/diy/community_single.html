@@ -1,28 +1,87 @@
 {% extends "diy/base.html" %}
+{% load static %}
 
 {% block extra_head %}
 {% endblock %}
 
 {% block main %}
 
-<h2>{{ community.name }}</h2>
+
+<div class="community_header_area">
+
+    <div class="community_header">
+       <div class="community_thumbnail_area">
+            {% if community.thumbnail %}
+            <img class="community_thumbnail" src="{{ community.thumbnail.url }}" alt="">
+            {% else %}
+            <img class="community_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
+            {% endif %}
+        </div>
+    </div>
+    <div class="community_header">
+
+        <h2 class="community_name">{{ community.name }}</h2>
+        <div class="community_status_area">
+            <div class="community_status">開設日時: {{ community.dt }}</div>
+            <div class="community_status">開設者: <a href="{% url 'diy:user' community.user.id %}">{{ community.user.handle_name }}</a></div>
+        </div>
+
+        <div class="community_control_area">
+            <div class="community_control">
+                <div id="community_control_enter" class="community_control_enter">
+                    <input id="community_control_enter_url" type="hidden" value="{% url 'diy:community_mod' community.id %}">
+                    {% if is_member %}退会する{% else %}参加する{% endif %}
+                </div>
+            </div>
+            <div class="community_control">
+                <div id="community_control_closer" class="community_control_closer">
+                    <input id="community_control_closer_url" type="hidden" value="{% url 'diy:community_mod' community.id %}">
+                    閉鎖する
+                </div>
+            </div>
+        </div>
+
+        <h3>メンバー</h3>
+
+
+        <div class="community_members_area">
+            {% for member in community.members.all %}
+            <a href="{% url 'diy:user' member.id %}" class="community_members">{{ member.handle_name }}</a>
+            {% empty %}
+            <div>メンバーがいません</div>
+            {% endfor %}
+
+        </div>
+
+        <h3>トピックを新たに作る</h3>
+
+        {% if is_member %}
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="text" name="title" maxlength="20" required placeholder="トピックタイトル">
+            <input type="file" name="thumbnail">
+            <input type="submit" value="作成">
+        </form>
+        {% else %}
+        <div>参加者のみ可能です。</div>
+        {% endif %}
+
+    </div>
+</div>
+
 
 <h2>トピック一覧</h2>
 
-{% if community_topics %}
-    {% include "diy/particle/topic_content.html" %}
-    {% include "diy/particle/paginator.html" with data=community_topics param="community_topic_page" %}
+{% if is_member %}
+    {% if community_topics %}
+        {% include "diy/particle/topic_content.html" %}
+        {% include "diy/particle/paginator.html" with data=community_topics param="community_topic_page" %}
+    {% else %}
+        <div>トピックはありません</div>
+    {% endif %}
 {% else %}
-    <div>トピックはありません</div>
+    <div>参加者のみ閲覧可能です。</div>
 {% endif %}
-
-<h2>トピックを新たに作る</h2>
-
-<form action="" method="POST">
-    {% csrf_token %}
-    <input type="text" name="title" maxlength="20" required placeholder="トピックタイトル">
-    <input type="submit" value="作成">
-</form>
 
 
 

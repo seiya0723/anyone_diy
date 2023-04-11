@@ -8,30 +8,23 @@
 
 {% block main %}
 
-<h2>プロジェクト一覧</h2>
-
-{% include "diy/particle/search.html" with search="project" %}
-{% include "diy/particle/project_content.html" %}
-{% include "diy/particle/paginator.html" with data=projects param="project_page" %}
-
-
-
-{% comment %}
-<h2>プロジェクトを投稿する</h2>
+<h2>プロジェクトを編集する</h2>
 
 <form action="" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 
-    {# TODO: ここで使用する素材を書く。JavaScriptでフォームを追加できるようにする。 #}
     <h3>必要な素材</h3>
 
     <input id="add_material_form" type="button" value="＋ 素材フォーム">
 
     <div id="material_form_area">
+        {% for material in materials %}
         <div class="material_form">
-            <input type="text" name="name" placeholder="素材名">
-            <input type="text" name="amount" placeholder="量">
+            <input type="hidden" name="id" value="{{ material.id }}">
+            <input type="text" name="name" placeholder="素材名" value="{{ material.name }}">
+            <input type="text" name="amount" placeholder="量" value="{{ material.amount }}">
         </div>
+        {% endfor %}
     </div>
 
     <h3>プロジェクト</h3>
@@ -39,18 +32,18 @@
     <select name="category">
         <option value="">カテゴリを選んでください</option>
         {% for category in categories %}
-        <option value="{{ category.id }}">{{ category.name }}</option>
+        <option value="{{ category.id }}" {% if category.id == project.category.id %}selected{% endif %}>{{ category.name }}</option>
         {% endfor %}
     </select>
 
-    <input type="text" name="title" maxlength="20" required placeholder="タイトル">
+    <input type="text" name="title" maxlength="20" required placeholder="タイトル" value="{{ project.title }}">
     <input type="file" name="thumbnail">
 
     {# TODO: ここでレベル(レベルは5段階なので、アイコンで表現できないだろうか？)と所要時間のフォームを作っておく。#}
-    <input type="number" name="time" placeholder="所要時間">
-    <input type="number" name="level" placeholder="レベル">
+    <input type="number" name="time" placeholder="所要時間" value="{{ project.time }}">
+    <input type="number" name="level" placeholder="レベル" value="{{ project.level }}">
 
-    <textarea name="description" placeholder="プロジェクトの説明"></textarea>
+    <textarea name="description" placeholder="プロジェクトの説明">{{ project.description }}</textarea>
 
     <h3>作業工程</h3>
 
@@ -59,12 +52,6 @@
     <input type="submit" value="送信"> 
 
 </form>
-{% endcomment %}
-
-
-
-
 {% endblock %}
-
 
 

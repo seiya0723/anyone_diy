@@ -65,12 +65,21 @@ class FavoriteForm(forms.ModelForm):
 class CommunityForm(forms.ModelForm):
     class Meta:
         model   = Community
-        fields  = [ "name","user","members" ]
+        fields  = [ "name","thumbnail","user","members" ]
+
+
+class CommunityMemberForm(forms.ModelForm):
+    class Meta:
+        model   = Community
+        fields  = [ "members" ]
+
+
+
     
 class CommunityTopicForm(forms.ModelForm):
     class Meta:
         model   = CommunityTopic
-        fields  = [ "title","community","user" ]
+        fields  = [ "title","thumbnail","community","user" ]
 
 class CommunityMessageForm(forms.ModelForm):
     class Meta:

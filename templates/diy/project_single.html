@@ -39,26 +39,34 @@
         <div class="project_control_area">
 
             <div class="project_control">
-                <form action="{% url 'diy:favorite' %}" method="POST" class="project_control_favorite">
+                <form action="{% url 'diy:favorite' %}" method="POST" class="project_control_favorite {% if is_favorite %}added_favorite{% endif %}">
                     {% csrf_token %}
                     <input type="hidden" name="project" value="{{ project.id }}">
-                    <div id="add_favorite">お気に入り登録</div>
+                    <div id="add_favorite">
+                        {% if is_favorite %}
+                        お気に入り登録解除
+                        {% else %}
+                        お気に入り登録
+                        {% endif %}
+                    </div>
                 </form>
             </div>
             {% if project.user == request.user %}
             <div class="project_control">
                 <div class="project_control_admin">
                     {# TODO: ここで編集ページ、削除ページへジャンプする。 #}
-                    <div class="project_control_admin_content"><div class="project_control_edit">編集</div></div>
-                    <div class="project_control_admin_content"><div class="project_control_delete">削除</div></div>
+                    <div class="project_control_admin_content"><a href="{% url 'diy:project_mod' project.id %}" class="project_control_edit">編集</a></div>
+                    <div class="project_control_admin_content">
+                        <a id="project_control_delete" class="project_control_delete">
+                            <input id="project_control_delete_url" type="hidden" value="{% url 'diy:project_mod' project.id %}">
+                            削除
+                        </a>
+                    </div>
                 </div>
             </div>
             {% endif %}
         </div>
-
-
         <div class="project_description">{{ project.description|urlize|linebreaksbr  }}</div>
-        
 
     </div>
 
@@ -120,8 +128,12 @@
                     </div>
                 </div>
             </div>
+
             <textarea name="comment" placeholder="ここにフィードバックを入力してください"></textarea>
-            <input type="submit" value="送信">
+
+            <div class="text-right">
+                <input type="submit" value="送信">
+            </div>
         </form>
         {% else %}
         <div>フィードバックを投稿するには、<a href="{% url 'account_login' %}">ログイン</a>してください。</div>
@@ -140,6 +152,15 @@
                 <div>投稿者: <a href="{% url 'diy:user' feedback.user.id %}">{{ feedback.user.handle_name }}</a></div>
             </div>
             <div class="feedback_comment">{{ feedback.comment|urlize|linebreaksbr }}</div>
+
+            {% if feedback.user == request.user or feedback.project.user == request.user %}
+            {# TODO: ここでproject.id ではなくfeedback.idをpkに与えている点に注意 #}
+            <form class="feedback_control_area" action="{% url 'diy:project_single' feedback.id %}">
+                <button class="feedback_delete" type="button">削除</button>
+            </form>
+            {% endif %}
+
+
             {% endfor %}
 
             {% include "diy/particle/paginator.html" with data=feedbacks param="feedback_page" %}
