@@ -22,6 +22,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    def str_id(self):
+        return str(self.id)
+
     
 class Project(models.Model):
 

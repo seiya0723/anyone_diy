@@ -187,3 +187,5 @@ ATTRIBUTES = {
     'img': ['src', ],
 }
 
+
+from .local_settings import *

@@ -35,6 +35,15 @@ class ProjectForm(forms.ModelForm):
                                     label   = Project.description.field.verbose_name 
                                     )
 
+class ProjectCategoryForm(forms.ModelForm):
+    class Meta:
+        model   = Project
+        fields  = [ "category" ]
+
+
+
+
+
 
 class MaterialForm(forms.ModelForm):
     class Meta:

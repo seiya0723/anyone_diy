@@ -59,7 +59,7 @@
         <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="text" name="title" maxlength="20" required placeholder="トピックタイトル">
-            <input type="file" name="thumbnail">
+            <input type="file" name="thumbnail" accept="image/*">
             <input type="submit" value="作成">
         </form>
         {% else %}

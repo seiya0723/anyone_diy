@@ -54,6 +54,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 )
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
+
+    # このカスタマーIDをもとにポータルへリダイレクトさせる
+    customer    = models.CharField(verbose_name="サブスクリプションカスタマーID",max_length=256, null=True,blank=True)
+
+
+
     objects     = UserManager()
 
     EMAIL_FIELD = 'email'

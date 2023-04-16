@@ -22,6 +22,14 @@ class CustomUserAdmin(UserAdmin):
     )
 
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+
+    
+    # 権限で絞り込む
+    list_filter = (
+        ('is_staff', admin.BooleanFieldListFilter),
+    )
+
+
     search_fields = ('username', 'first_name', 'last_name', 'email')
 
 admin.site.register(CustomUser, CustomUserAdmin)

@@ -1,6 +1,14 @@
 
 
 <form action="" method="GET">
+    {% if search == "project" %}
+    <select name="category">
+        <option value="">カテゴリ未指定</option>
+        {% for category in categories %}
+        <option value="{{ category.id }}" {% if category.str_id == request.GET.category %}selected{% endif %}>{{ category.name }}</option>
+        {% endfor %}
+    </select>
+    {% endif %}
     <input type="text" name="search" value="{{ request.GET.search }}" placeholder="キーワードを入力してください">
     <input type="submit" value="検索">
 </form>

@@ -1,22 +1,39 @@
 {% load static %}
 
+{# TODO:このproject_content.html をもとにしてコミュニティ、お気に入り、トピックの表示に流用できるように改良する。 #}
+
 <div class="content_area">
     {% for project in projects %}
     <div class="content">
         <a class="content_inner" href="{% url 'diy:project_single' project.id %}">
             <div class="content_thumbnail_area">
+
                 {% if project.thumbnail %}
                 <img class="content_thumbnail" src="{{ project.thumbnail.url }}" alt="">
                 {% else %}
                 <img class="content_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
                 {% endif %}
-                <div class="content_title">{{ project.title }}</div>
+
+                <div class="content_dt"><i class="fa-solid fa-pen-fancy"></i> {{ project.dt|date:"Y/m/d" }}</div>
+
+                {# TODO: ここの構造をもう少し改良するべし。 #}
+                <div class="content_title">
+                    <div class="content_detail">
+                        {# <i class="fa-solid fa-list"></i> {{ project.category.name }} #}
+
+                        {# 投稿日時は上部でも良いのでは？ #}
+                        {# <i class="fa-solid fa-pen-fancy"></i> {{ project.dt|date:"Y/m/d" }} #}
+
+                        <i class="fa-solid fa-hammer"></i> Lv. {{ project.level }}
+                        <i class="fa-regular fa-clock"></i> {{ project.time }}分
+                    </div>
+                    {{ project.title }}
+                </div>
+
             </div>
         </a>
     </div>
     {% endfor %}
 </div>
-
-
 
 

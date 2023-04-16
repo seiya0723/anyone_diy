@@ -8,6 +8,9 @@ from .forms import ProjectForm,CommunityMessageForm,FeedbackForm
 class CategoryAdmin(admin.ModelAdmin):
     list_display    = [ "id","dt","name" ]
 
+
+
+
 class ProjectAdmin(admin.ModelAdmin):
 
     form            = ProjectForm

@@ -19,9 +19,19 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 from .models import Category,Project,Material,Feedback,Favorite,Community,CommunityTopic,CommunityMessage
-from .forms import CategoryForm,ProjectForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityTopicForm, CommunityMessageForm,CommunityMemberForm,CustomUserForm
+from .forms import CategoryForm,ProjectForm,ProjectCategoryForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityTopicForm, CommunityMessageForm,CommunityMemberForm,CustomUserForm
 
 from users.models import CustomUser
+
+
+
+
+from django.conf import settings
+from django.urls import reverse_lazy
+
+import stripe
+stripe.api_key  = settings.STRIPE_API_KEY
+
 
 #TODO: 1ページに表示させるコンテンツ数
 LIST_PER_PAGE   = 10
@@ -57,7 +67,17 @@ class ProjectView(View):
                 query &= Q( Q(title__contains=word) | Q(description__contains=word) )
 
 
-        #TODO: ここにプロジェクトの詳細検索を受け付ける(難易度やフィードバックの点数などでも検索できるようにする。)
+        #TODO: ここにプロジェクトの詳細検索を受け付ける
+        # カテゴリ検索
+        form    = ProjectCategoryForm(request.GET)
+
+        if form.is_valid():
+            cleaned = form.clean()
+            query &= Q( category=cleaned["category"] )
+
+
+
+
         projects    = Project.objects.filter(query).order_by("-dt")
         paginator   = Paginator(projects,LIST_PER_PAGE)
 
@@ -568,14 +588,35 @@ class MypageView(LoginRequiredMixin, View):
             context["communities"]  = paginator.get_page(1)
 
 
-        favorites           = Favorite.objects.filter(user=request.user).order_by("-dt")
+
+        # TODO:ここでお気に入り検索をする
+        query   = Q(user=request.user)
+
+        if "search" in request.GET:
+            words   = request.GET["search"].replace("　"," ").split(" ")
+
+            for word in words:
+                if word == "":
+                    continue
+
+                query &= Q( Q(project__title__contains=word) | Q(project__description__contains=word) )
+
+        # カテゴリ検索
+        form    = ProjectCategoryForm(request.GET)
+        if form.is_valid():
+
+            cleaned = form.clean()
+            query &= Q( project__category=cleaned["category"] )
+
+
+
+        favorites           = Favorite.objects.filter(query).order_by("-dt")
         paginator           = Paginator(favorites,LIST_PER_PAGE)
 
         if "favorite_page" in request.GET:
             context["favorites"] = paginator.get_page(request.GET["favorite_page"])
         else:
             context["favorites"] = paginator.get_page(1)
-
 
         return render(request, "diy/mypage.html", context)
 
@@ -593,6 +634,26 @@ class MypageView(LoginRequiredMixin, View):
         return redirect("diy:mypage")
 
 mypage  = MypageView.as_view()
+
+
+class MypageQuitView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+
+        custom_user = CustomUser.objects.filter(id=request.user.id).first()
+
+        #TODO:サブスクの確認もやっておくべきでは？
+
+        if custom_user:
+            messages.success(request, "退会処理を受け付けました。ご利用ありがとうございました。")
+            print(custom_user)
+            #TODO:退会処理をテストしておく
+            #custom_user.delete()
+        else:
+            messages.error(request, "ユーザーが存在しません")
+
+        return redirect("diy:index")
+
+mypage_quit = MypageQuitView.as_view()
 
 
 class UserView(View):
@@ -643,8 +704,6 @@ class FavoriteFolderView(LoginRequiredMixin,View):
 favorite_folder = FavoriteFolderView.as_view()
 """
 
-
-
 class FavoriteView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         data    = {}
@@ -673,10 +732,77 @@ class FavoriteView(LoginRequiredMixin,View):
         return JsonResponse(data)
     
     # オミット検討中
+    """
     def patch(self, request, *args, **kwargs):
         #TODO:指定したお気に入りフォルダへ移動させる
         return redirect("bbs:index")
+    """
 
 favorite    = FavoriteView.as_view()
 
+class CheckoutView(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+
+        # セッションを作る
+        checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    'price': settings.STRIPE_PRICE_ID,
+                    'quantity': 1,
+                },
+            ],
+            payment_method_types=['card'],
+            mode='subscription',
+            success_url=request.build_absolute_uri(reverse_lazy("diy:success")) + '?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=request.build_absolute_uri(reverse_lazy("diy:mypage")),
+        )
+
+        return redirect(checkout_session.url)
+    
+checkout    = CheckoutView.as_view()
+
+
+class SuccessView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+
+        #TODO:ここは404NotFoundを返すべきか？
+        if "session_id" not in request.GET:
+            messages.error(request, "セッションIDがありません。")
+            return redirect("diy:mypage")
+
+        try:
+            checkout_session_id = request.GET['session_id']
+            checkout_session    = stripe.checkout.Session.retrieve(checkout_session_id)
+        except:
+            messages.error(request, "このセッションIDは無効です。")
+            return redirect("diy:mypage")
+
+        user            = CustomUser.objects.filter(id=request.user.id).first()
+        user.customer   = checkout_session["customer"]
+        user.save()
+
+        messages.success(request, "有料会員登録しました！")
+
+        return redirect("diy:mypage")
+
+success     = SuccessView.as_view()
+
+class PortalView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+
+        if not request.user.customer:
+            messages.error(request, "有料会員登録されていません")
+            return redirect("diy:mypage")
+
+
+        #TODO:有料会員登録を解除した場合は？
+        # ポータルサイトへリダイレクト
+        portalSession   = stripe.billing_portal.Session.create(
+            customer    = request.user.customer,
+            return_url  = request.build_absolute_uri(reverse_lazy("diy:mypage")),
+            )
+
+        return redirect(portalSession.url)
+
+portal      = PortalView.as_view()
 

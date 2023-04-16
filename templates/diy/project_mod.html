@@ -37,7 +37,7 @@
     </select>
 
     <input type="text" name="title" maxlength="20" required placeholder="タイトル" value="{{ project.title }}">
-    <input type="file" name="thumbnail">
+    <input type="file" name="thumbnail" accept="image/*">
 
     {# TODO: ここでレベル(レベルは5段階なので、アイコンで表現できないだろうか？)と所要時間のフォームを作っておく。#}
     <input type="number" name="time" placeholder="所要時間" value="{{ project.time }}">

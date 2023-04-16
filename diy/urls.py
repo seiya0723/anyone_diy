@@ -17,7 +17,13 @@ urlpatterns = [
     path("community_topic/<uuid:pk>/" , views.community_topic     , name="community_topic"  ),
 
     path("mypage/"                    , views.mypage              , name="mypage"           ),
+    path("mypage/quit/"               , views.mypage_quit         , name="mypage_quit"      ),
     path("user/<uuid:pk>"             , views.user                , name="user"             ),
 
+
+    path("checkout/"                  , views.checkout            , name="checkout"         ),
+    path("success/"                   , views.success             , name="success"          ),
+    path("portal/"                    , views.portal              , name="portal"           ),
+    
 ]
 

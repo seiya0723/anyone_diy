@@ -12,7 +12,7 @@
     <div>姓    :<input type="text" name="last_name"   value="{{ request.user.last_name   }}"></div>
     <div>名    :<input type="text" name="first_name"  value="{{ request.user.first_name  }}"></div>
     <div>ハンドルネーム:<input type="text" name="handle_name" value="{{ request.user.handle_name }}"></div>
-    <div>アイコン:<input type="file" name="icon"></div>
+    <div>アイコン:<input type="file" name="icon" accept="image/*"></div>
     {{ form.introduction }}
 
     <input type="submit" value="編集">
@@ -32,13 +32,22 @@
 
 <h2>お気に入り</h2>
 
-{# TODO: お気に入り登録の管理ページへのリンクを作る。FavoriteFolderViewのGET #}
-
+{% include "diy/particle/search.html" with search="project" %}
 {% include "diy/particle/favorite_content.html" %}
 {% include "diy/particle/paginator.html" with data=favorites param="favorite_page" %}
 
 <h2>有料会員登録</h2>
 
+{# TODO: ここでStripeのサブスク処理を #}
+
+{% if request.user.customer %}
+<a href="{% url 'diy:portal' %}">有料会員登録設定をする</a>
+{% else %}
+<form action="{% url 'diy:checkout' %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="有料会員登録する">
+</form>
+{% endif %}
 
 
 <h2>プロジェクトの作成</h2>
@@ -70,7 +79,7 @@
     </select>
 
     <input type="text" name="title" maxlength="20" required placeholder="タイトル">
-    <input type="file" name="thumbnail">
+    <input type="file" name="thumbnail" accept="image/*">
 
     {# TODO: ここでレベル(レベルは5段階なので、アイコンで表現できないだろうか？)と所要時間のフォームを作っておく。#}
     <input type="number" name="time" placeholder="所要時間">
@@ -93,7 +102,7 @@
 <form action="{% url 'diy:community' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="text" name="name" required maxlength="20" placeholder="タイトル" >
-    <input type="file" name="thumbnail">
+    <input type="file" name="thumbnail" accept="image/*">
     <input type="submit" value="送信">
 </form>
 {% else %}
@@ -101,7 +110,14 @@
 {% endif %}
 
 
+<h2>退会処理</h2>
 
+<form action="{% url 'diy:mypage_quit' %}" method="POST" onsubmit="if(confirm('本当に退会しますか？\n退会するとこのアカウントから投稿されたデータは全て削除されます。')){ return true } else { return false };">
+    {% csrf_token %}
+    <div class="text-right">
+        <input type="submit" value="退会する">
+    </div>
+</form>
 
 
 {% endblock %}

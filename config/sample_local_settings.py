@@ -1,0 +1,4 @@
+STRIPE_API_KEY          = ""
+STRIPE_PUBLISHABLE_KEY  = ""
+STRIPE_PRICE_ID         = ""
+
