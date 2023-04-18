@@ -5,11 +5,14 @@
     <div class="content">
         <a class="content_inner" href="{% url 'diy:community_single' community.id %}">
             <div class="content_thumbnail_area">
+
                 {% if community.thumbnail %}
                 <img class="content_thumbnail" src="{{ community.thumbnail.url }}" alt="">
                 {% else %}
                 <img class="content_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
                 {% endif %}
+
+                <div class="content_dt"><i class="fa-solid fa-pen-fancy"></i> {{ community.dt|date:"Y/m/d" }}</div>
                 <div class="content_title">{{ community.name }}</div>
             </div>
         </a>

@@ -1,4 +1,5 @@
 {% extends "diy/base.html" %}
+{% load static %}
 
 {% block extra_head %}
 {% endblock %}
@@ -6,6 +7,16 @@
 {% block main %}
 
 <h2>{{ user.handle_name }}</h2>
+
+<div class="text-center">
+    <div class="user_icon_area">
+        {% if user.icon %}
+        <img class="user_icon" src="{{ user.icon.url }}" alt="">
+        {% else %}
+        <img class="user_icon" src="{% static 'diy/image/noimage.jpg' %}" alt="">
+        {% endif %}
+    </div>
+</div>
 
 <h3>自己紹介文</h3>
 

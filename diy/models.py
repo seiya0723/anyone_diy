@@ -9,7 +9,6 @@ import uuid
 
 MAX_STAR    = 5
 
-
 class Category(models.Model):
 
     class Meta:
@@ -47,15 +46,11 @@ class Project(models.Model):
     level       = models.IntegerField(verbose_name="作業難度", validators=[ MinValueValidator(1), MaxValueValidator(5) ])
     user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
 
-    # TODO:ここはSummernote実装時にTextFieldに直す。
-    #process     = models.CharField(verbose_name="作業工程(作業内容)",max_length=3000)
     process     = models.TextField(verbose_name="作業工程(作業内容)")
 
 
 
     #TODO: ここに星の平均点を出す。
-
-
     def avg_star_score(self):
         feedbacks   = Feedback.objects.filter(project=self.id).aggregate(Avg("star"))
         
@@ -81,12 +76,9 @@ class Project(models.Model):
         else:
             return 1 
 
-    #TODO:ここにフィードバック数を出す。
     def feedback_amount(self):
         return Feedback.objects.filter(project=self.id).count()
     
-
-
     
     def __str__(self):
         return self.title
@@ -119,7 +111,6 @@ class Feedback(models.Model):
     user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
     star        = models.IntegerField(verbose_name="星",validators=[MinValueValidator(1),MaxValueValidator(MAX_STAR)])
 
-
     def star_icon(self):
         dic                 = {}
         dic["true_star"]    = self.star * " "
@@ -134,10 +125,8 @@ class FavoriteFolder(models.Model):
     class Meta:
         verbose_name_plural = "お気に入りフォルダ"
 
-
     id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
     dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
-
     title       = models.CharField(verbose_name="タイトル",max_length=20)
     user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
 
@@ -169,8 +158,6 @@ class Community(models.Model):
     id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
     dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
     name        = models.CharField(verbose_name="コミュニティ名",max_length=20)
-
-    #TODO:コミュニティにもサムネイルを
     thumbnail   = models.ImageField(verbose_name="サムネイル",upload_to="diy/community/thumbnail",null=True,blank=True)
 
     user        = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", verbose_name="投稿者",on_delete=models.CASCADE)
@@ -190,7 +177,6 @@ class CommunityTopic(models.Model):
     title       = models.CharField(verbose_name="タイトル",max_length=20)
 
     thumbnail   = models.ImageField(verbose_name="サムネイル",upload_to="diy/topic/thumbnail",null=True,blank=True)
-
     community   = models.ForeignKey(Community,verbose_name="コミュニティ",on_delete=models.CASCADE)
     user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
 
@@ -208,24 +194,6 @@ class CommunityMessage(models.Model):
     dt              = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
 
     community_topic =  models.ForeignKey(CommunityTopic,verbose_name="コミュニティトピック",on_delete=models.CASCADE)
-
-    # TODO:ここはSummernote実装時にTextFieldに直す。(制限強めにしておく)
-    #comment         = models.CharField(verbose_name="コメント",max_length=1000)
     comment         = models.TextField(verbose_name="コメント")
     user            = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
 
-
-# TODO:Summernote実装時に処分
-# マークダウンに貼り付ける用の画像保存用モデル(ファイル名はサーバーサイドでuuidを割り当てて命名する？)
-"""
-class Album(models.Model):
-
-    class Meta:
-        verbose_name_plural = "アルバム"
-
-    id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
-
-    dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
-    image       = models.ImageField(verbose_name="画像", upload_to="diy/album/image")
-    user        = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
-"""

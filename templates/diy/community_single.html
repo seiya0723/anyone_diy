@@ -5,8 +5,6 @@
 {% endblock %}
 
 {% block main %}
-
-
 <div class="community_header_area">
 
     <div class="community_header">
@@ -21,9 +19,18 @@
     <div class="community_header">
 
         <h2 class="community_name">{{ community.name }}</h2>
+
         <div class="community_status_area">
+            <div class="status_user_area">
+                <a class="status_user" href="{% url 'diy:user' community.user.id %}">
+                    {% if community.user.icon %}
+                    <img class="user_icon_micro" src="{{ community.user.icon.url }}" alt=""> {{ community.user.handle_name }}
+                    {% else %}
+                    <img class="user_icon_micro" src="{% static 'diy/image/noimage.jpg' %}" alt=""> {{ community.user.handle_name }}
+                    {% endif %}
+                </a>
+            </div>
             <div class="community_status">開設日時: {{ community.dt }}</div>
-            <div class="community_status">開設者: <a href="{% url 'diy:user' community.user.id %}">{{ community.user.handle_name }}</a></div>
         </div>
 
         <div class="community_control_area">
@@ -43,14 +50,20 @@
 
         <h3>メンバー</h3>
 
-
         <div class="community_members_area">
             {% for member in community.members.all %}
-            <a href="{% url 'diy:user' member.id %}" class="community_members">{{ member.handle_name }}</a>
+            <div class="status_user_area">
+                <a class="status_user" href="{% url 'diy:user' member.id %}">
+                    {% if member.icon %}
+                    <img class="user_icon_nano" src="{{ member.icon.url }}" alt=""> {{ member.handle_name }}
+                    {% else %}
+                    <img class="user_icon_nano" src="{% static 'diy/image/noimage.jpg' %}" alt=""> {{ member.handle_name }}
+                    {% endif %}
+                </a>
+            </div>
             {% empty %}
-            <div>メンバーがいません</div>
+            <div class="status_user_area">メンバーがいません</div>
             {% endfor %}
-
         </div>
 
         <h3>トピックを新たに作る</h3>
@@ -59,16 +72,22 @@
         <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="text" name="title" maxlength="20" required placeholder="トピックタイトル">
-            <input type="file" name="thumbnail" accept="image/*">
+
+            <div>
+                <label class="image_input_area">
+                    <input class="image_input" type="file" name="thumbnail" accept="image/*">
+                    <div class="image_input_icon"><i class="fas fa-image"></i></div>
+                    <img class="image_input_preview" src="" alt="">
+                </label>
+            </div>
+
             <input type="submit" value="作成">
         </form>
         {% else %}
         <div>参加者のみ可能です。</div>
         {% endif %}
-
     </div>
 </div>
-
 
 <h2>トピック一覧</h2>
 

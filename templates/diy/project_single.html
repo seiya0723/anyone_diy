@@ -20,9 +20,20 @@
     </div>
     <div class="project_header">
         <h2 class="project_title">{{ project.title }}</h2>
+
+
+
         <div class="project_status_area">
+            <div class="status_user_area">
+                <a class="status_user" href="{% url 'diy:user' project.user.id %}">
+                    {% if project.user.icon %}
+                    <img class="user_icon_micro" src="{{ project.user.icon.url }}" alt=""> {{ project.user.handle_name }}
+                    {% else %}
+                    <img class="user_icon_micro" src="{% static 'diy/image/noimage.jpg' %}" alt=""> {{ project.user.handle_name }}
+                    {% endif %}
+                </a>
+            </div>
             <div class="project_status">投稿日時: {{ project.dt }}</div>
-            <div class="project_status">投稿者: <a href="{% url 'diy:user' project.user.id %}">{{ project.user.handle_name }}</a></div>
             <div class="project_status">カテゴリ: <a href="">{{ project.category.name }}</a></div>
             <div class="project_status">所要時間: {{ project.time }}分</div>
             <div class="project_status">作業難度: {{ project.level }}</div>
@@ -143,13 +154,23 @@
         <h3 class="project_subtitle">投稿されたフィードバック</h3>
         {% if feedbacks %}
             {% for feedback in feedbacks %}
+
+            <div class="status_user_area">
+                <a class="status_user" href="{% url 'diy:user' feedback.user.id %}">
+                    {% if feedback.user.icon %}
+                    <img class="user_icon_nano" src="{{ feedback.user.icon.url }}" alt=""> {{ feedback.user.handle_name }}
+                    {% else %}
+                    <img class="user_icon_nano" src="{% static 'diy/image/noimage.jpg' %}" alt=""> {{ feedback.user.handle_name }}
+                    {% endif %}
+                </a>
+            </div>
+
             <div class="feedback_star">
                 <span class="feedback_true_star">{% for s in feedback.star_icon.true_star %}<i class="fas fa-star"></i>{% endfor %}</span>
                 <span class="feedback_false_star">{% for s in feedback.star_icon.false_star %}<i class="far fa-star"></i>{% endfor %}</span>
             </div>
             <div class="feedback_status">
                 <div>投稿時間: {{ feedback.dt }}</div>
-                <div>投稿者: <a href="{% url 'diy:user' feedback.user.id %}">{{ feedback.user.handle_name }}</a></div>
             </div>
             <div class="feedback_comment">{{ feedback.comment|urlize|linebreaksbr }}</div>
 
@@ -160,9 +181,7 @@
             </form>
             {% endif %}
 
-
             {% endfor %}
-
             {% include "diy/particle/paginator.html" with data=feedbacks param="feedback_page" %}
         {% else %}
         <div>フィードバックはありません。</div>

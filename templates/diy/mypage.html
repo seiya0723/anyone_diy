@@ -5,19 +5,6 @@
 
 {% block main %}
 
-<h2>プロフィール編集</h2>
-
-<form action="" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div>姓    :<input type="text" name="last_name"   value="{{ request.user.last_name   }}"></div>
-    <div>名    :<input type="text" name="first_name"  value="{{ request.user.first_name  }}"></div>
-    <div>ハンドルネーム:<input type="text" name="handle_name" value="{{ request.user.handle_name }}"></div>
-    <div>アイコン:<input type="file" name="icon" accept="image/*"></div>
-    {{ form.introduction }}
-
-    <input type="submit" value="編集">
-
-</form>
 
 <h2>投稿したプロジェクト</h2>
 
@@ -36,19 +23,46 @@
 {% include "diy/particle/favorite_content.html" %}
 {% include "diy/particle/paginator.html" with data=favorites param="favorite_page" %}
 
+
+
+<h2>プロフィール編集</h2>
+
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div>
+        <input type="text" name="last_name"   value="{{ request.user.last_name   }}" placeholder="姓">
+        <input type="text" name="first_name"  value="{{ request.user.first_name  }}" placeholder="名">
+    </div>
+    <input type="text" name="handle_name" value="{{ request.user.handle_name }}" placeholder="ハンドルネーム">
+    <div>アイコン:
+        <label class="image_input_area">
+            <input class="image_input" type="file" name="icon" accept="image/*">
+            <div class="image_input_icon"><i class="fas fa-image"></i></div>
+            <img class="image_input_preview" src="{% if request.user.icon %}{{ request.user.icon.url }}{% endif %}" alt="">
+        </label>
+    </div>
+    {{ form.introduction }}
+
+    <div class="text-right">
+        <input type="submit" value="編集">
+    </div>
+</form>
+
 <h2>有料会員登録</h2>
 
 {# TODO: ここでStripeのサブスク処理を #}
 
 {% if request.user.customer %}
-<a href="{% url 'diy:portal' %}">有料会員登録設定をする</a>
+
+<div>
+    <a class="button" href="{% url 'diy:portal' %}">有料会員登録設定をする</a>
+</div>
 {% else %}
 <form action="{% url 'diy:checkout' %}" method="post">
     {% csrf_token %}
     <input type="submit" value="有料会員登録する">
 </form>
 {% endif %}
-
 
 <h2>プロジェクトの作成</h2>
 
@@ -71,28 +85,38 @@
 
     <h3>プロジェクト</h3>
 
-    <select name="category">
-        <option value="">カテゴリを選んでください</option>
-        {% for category in categories %}
-        <option value="{{ category.id }}">{{ category.name }}</option>
-        {% endfor %}
-    </select>
 
-    <input type="text" name="title" maxlength="20" required placeholder="タイトル">
-    <input type="file" name="thumbnail" accept="image/*">
+    <div>
+        <select name="category">
+            <option value="">カテゴリを選んでください</option>
+            {% for category in categories %}
+            <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="title" maxlength="20" required placeholder="タイトル">
+        <div>
+            <label class="image_input_area">
+                <input class="image_input" type="file" name="thumbnail" accept="image/*">
+                <div class="image_input_icon"><i class="fas fa-image"></i></div>
+                <img class="image_input_preview" src="" alt="">
+            </label>
+        </div>
+    </div>
 
     {# TODO: ここでレベル(レベルは5段階なので、アイコンで表現できないだろうか？)と所要時間のフォームを作っておく。#}
-    <input type="number" name="time" placeholder="所要時間">
-    <input type="number" name="level" placeholder="レベル">
+    <div>
+        <input type="number" name="time" placeholder="所要時間">
+        <input type="number" name="level" placeholder="レベル">
+    </div>
 
     <textarea name="description" placeholder="プロジェクトの説明"></textarea>
 
     <h3>作業工程</h3>
-
     {{ project_form.process }}
 
-    <input type="submit" value="送信"> 
-
+    <div class="text-right">
+        <input type="submit" value="送信"> 
+    </div>
 </form>
 
 <h2>コミュニティの作成</h2>
@@ -102,13 +126,20 @@
 <form action="{% url 'diy:community' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="text" name="name" required maxlength="20" placeholder="タイトル" >
-    <input type="file" name="thumbnail" accept="image/*">
+
+    <div>
+        <label class="image_input_area">
+            <input class="image_input" type="file" name="thumbnail" accept="image/*">
+            <div class="image_input_icon"><i class="fas fa-image"></i></div>
+            <img class="image_input_preview" src="" alt="">
+        </label>
+    </div>
+
     <input type="submit" value="送信">
 </form>
 {% else %}
 <div>コミュニティの作成は有料会員限定です。</div>
 {% endif %}
-
 
 <h2>退会処理</h2>
 
@@ -121,7 +152,4 @@
 
 
 {% endblock %}
-
-
-
 

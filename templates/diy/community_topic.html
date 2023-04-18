@@ -17,14 +17,26 @@
         {% if community_messages %}
             {% for community_message in community_messages %}
             <div class="topic_message_area">
+
+
                 <div class="topic_message_status_area">
                     <div class="topic_message_status">投稿日時: {{ community_message.dt }}</div>
-                    <div class="topic_message_status">投稿者: <a href="{% url 'diy:user' community_message.user.id %}">{{ community_message.user.handle_name }}</a></div>
+                    <div class="status_user_area">
+                        <a class="status_user" href="{% url 'diy:user' community_message.user.id %}">
+                            {% if community_message.user.icon %}
+                            <img class="user_icon_nano" src="{{ community_message.user.icon.url }}" alt=""> {{ community_message.user.handle_name }}
+                            {% else %}
+                            <img class="user_icon_nano" src="{% static 'diy/image/noimage.jpg' %}" alt=""> {{ community_message.user.handle_name }}
+                            {% endif %}
+                        </a>
+                    </div>
+
                 </div>
                 <div class="topic_message">{{ community_message.comment|safe }}</div>
                 
                 
                 {% if community_message.user == request.user or community_message.community_topic.user == request.user %}
+                {% comment %}
                 <div class="topic_message_control_area">
                     {% if community_message.user == request.user %}
                     <div class="topic_message_control">
@@ -35,6 +47,11 @@
                         <input class="topic_message_delete_url" type="hidden" value="{% url 'diy:community_topic' community_message.id %}">
                         <div class="message_delete">削除する</div>
                     </div>
+                </div>
+                {% endcomment %}
+                <div class="text-right topic_message_delete">
+                    <input class="topic_message_delete_url" type="hidden" value="{% url 'diy:community_topic' community_message.id %}">
+                    <button type="button" class="message_delete">削除</button>
                 </div>
                 {% endif %}
 
@@ -50,7 +67,15 @@
         <h3>トピック</h3>
         <div class="community_status_area">
             <div class="community_status">作成日時: {{ community_topic.dt }}</div>
-            <div class="community_status">トピック作成者: <a href="{% url 'diy:user' community_topic.user.id %}">{{ community_topic.user.handle_name }}</a></div>
+            <div class="status_user_area">
+                <a class="status_user" href="{% url 'diy:user' community_topic.user.id %}">
+                    {% if community_topic.user.icon %}
+                    <img class="user_icon_nano" src="{{ community_topic.user.icon.url }}" alt=""> {{ community_topic.user.handle_name }}
+                    {% else %}
+                    <img class="user_icon_nano" src="{% static 'diy/image/noimage.jpg' %}" alt=""> {{ community_topic.user.handle_name }}
+                    {% endif %}
+                </a>
+            </div>
         </div>
 
         <div class="community_thumbnail_area">
@@ -62,11 +87,20 @@
         </div>
 
         {% if community_topic.user == request.user or community_topic.community.user == request.user %}
+        {% comment %}
         <div class="community_control">
             <div id="community_topic_control_closer" class="community_control_closer">
                 <input id="community_topic_control_closer_url" type="hidden" value="{% url 'diy:community_single' community_topic.id %}">
                 削除する
             </div>
+        </div>
+        {% endcomment %}
+
+        <div class="text-right">
+            <button id="community_topic_control_closer" type="button" class="message_delete">
+                <input id="community_topic_control_closer_url" type="hidden" value="{% url 'diy:community_single' community_topic.id %}">
+                トピックを削除
+            </button>
         </div>
         {% endif %}
 

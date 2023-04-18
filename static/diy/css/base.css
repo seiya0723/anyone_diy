@@ -183,22 +183,18 @@ a {
 
 
 .project_header_area{
-
     margin:1rem 0;
     display:flex;
     flex-wrap:wrap;
 }
-
 .project_header{
     width:calc(100% / 2);
-
 }
-
-
 .project_title {
     padding:0.5rem;
     font-size:1.5rem;
 }
+
 
 .project_thumbnail_area{
     text-align:center;
@@ -210,11 +206,8 @@ a {
 }
 .project_status{
     display:inline-block;
-
     margin:0 0.25rem;
 }
-
-
 .project_control_area {
     display:flex;
     flex-wrap:wrap;
@@ -254,21 +247,13 @@ a {
 }
 .project_control_edit{ border:solid 0.2rem var(--light-green); }
 .project_control_delete{ border:solid 0.2rem crimson; }
-
-
-
-
 .project_description{
     font-size:1.2rem;
     margin:0.5rem;
 }
-
-
-
 .project_subtitle{
     font-size:1.25rem;
 }
-
 .project_content_area{
     display:flex;
     flex-wrap:wrap;
@@ -310,6 +295,34 @@ a {
     width:calc(100% / 3 * 2);
 }
 
+/* project_header responsive */
+
+@media (max-width:800px){
+    .project_header{
+        width:100%;
+    }
+    .project_status_area{
+        margin:0 1rem;
+    }
+    .project_control {
+        width:100%;
+    }
+    .project_content_right{
+        width:100%;
+    }
+    .project_content_left{
+        width:100%;
+    }
+    .project_feedback_right{
+        width:100%;
+    }
+    .project_feedback_left{
+        width:100%;
+    }
+}
+
+
+
 .material_area{
     display:flex;
     flex-wrap:wrap;
@@ -337,8 +350,6 @@ a {
 
 /* community */ 
 
-
-
 .community_header_area{
     margin:1rem 0;
     display:flex;
@@ -363,6 +374,13 @@ a {
     display:inline-block;
     margin:0 0.25rem;
 }
+
+.community_members_area{
+
+    max-height:10rem;
+    overflow-y:auto;
+}
+
 
 .community_control_area{
     display:flex;
@@ -397,6 +415,11 @@ a {
 
 
 
+@media (max-width:800px){
+    .community_header{
+        width:100%;
+    }
+}
 
 .topic_area{
     display:flex;
@@ -405,7 +428,14 @@ a {
 .topic_content{
     width:calc(100% / 2);
 }
-
+@media (max-width:800px){
+    .topic_area{
+        flex-direction:column-reverse;
+    }
+    .topic_content{
+        width:100%;
+    }
+}
 
 .topic_message_area {
     margin: 0.5rem;
@@ -424,8 +454,6 @@ a {
 }
 
 
-
-
 .topic_message_control_area{
     display:flex;
     flex-wrap:wrap;
@@ -441,9 +469,17 @@ a {
     border:solid 0.2rem var(--light-green);
 }
 .message_delete{
-    padding:0.5rem;
-    border:solid 0.2rem crimson;
+
+
+    background: white;
+    display: inline-block;
+    border: solid 0.2rem crimson;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+
     transition:0.2s;
+
 }
 .message_delete:hover{
     background:crimson;
@@ -616,8 +652,17 @@ label[for="star_radio_5"]:hover ~ label[for="star_radio_1"] > .false_star{ displ
     margin:0.25rem;
     border-radius:0.25rem;
     border:solid 0.2rem var(--orange);
+    transition:0.2s;
 }
-
+.page_link_center{
+    font-weight:bold;
+    background: var(--orange);
+    color:white;
+}
+.page_link:hover{
+    background: var(--orange);
+    color:white;
+}
 
 
 /* form tag */
@@ -631,11 +676,19 @@ input[type="submit"], input[type="button"]{
   line-height: 1.5;
   color: var(--gray);
   background-clip: padding-box;
-  border: 1px solid var(--gray);
   border-radius: .25rem;
-  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
   cursor:pointer;
+
+  transition:0.2s;
+
+  background:white;
+  border: 1px solid var(--light-green);
 }
+input[type="submit"]:hover, input[type="button"]:hover{
+  background:var(--light-green);
+  color:white;
+}
+
 input[type="text"], input[type="number"], select{
   display: inline-block;
   height: calc(1.5em + .75rem + 2px);
@@ -644,9 +697,11 @@ input[type="text"], input[type="number"], select{
   line-height: 1.5;
   color: var(--gray);
   background-clip: padding-box;
-  border: 1px solid var(--gray);
   border-radius: .25rem;
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  
+  background:white;
+  border: 1px solid var(--light-green);
 }
 textarea{
     overflow: auto;
@@ -659,9 +714,123 @@ textarea{
     line-height: 1.5;
     color: var(--gray);
     background-clip: padding-box;
-    border: 1px solid var(--gray);
+    border: 1px solid var(--light-green);
     border-radius: .25rem;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+
+
 }
 
 
+/* input tag responsive */
+
+@media (max-width:800px){
+    input[type="submit"], input[type="button"],input[type="text"], input[type="number"], select{
+        width:45%;
+    }
+
+
+}
+
+
+/* message_area */
+
+.notify_message_area{
+    position:fixed;
+    width:100%;
+    top:0;
+    left:0;
+}
+.notify_message{
+    color:white;
+    padding:1rem;
+    margin:1rem;
+    border-radius:0.5rem;
+
+    display:flex;
+}
+.notify_message_success{
+    background:forestgreen;
+}
+.notify_message_error{
+    background:crimson;
+}
+.notify_message_content {
+    width:calc(100% - 2rem);
+    font-size:1.25rem;
+}
+.notify_message_delete {
+    cursor:pointer;
+    width:2rem;
+    transition:0.2s;
+}
+.notify_message_delete i{
+    font-size:1.5rem;
+}
+.notify_message_delete:hover{
+    color:black;
+    transition:0.2s;
+}
+
+
+/* user page */
+
+
+.user_icon_area{
+}
+.user_icon{
+}
+.user_icon_micro{
+    width:4rem;
+    height:4rem;
+    border-radius:0.5rem;
+}
+.user_icon_nano{
+    width:3rem;
+    height:3rem;
+    border-radius:50%;
+}
+.status_user_area{
+    margin:0.25rem 0;
+}
+.status_user{
+    display:flex;
+    align-items:center;
+    width:fit-content;
+}
+
+
+.button {
+    display:inline-block;
+    border:solid 1px var(--light-green);
+    border-radius:0.5rem;
+    padding:0.5rem 1rem;
+    transition:0.2s;
+    margin:0.5rem;
+}
+.button:hover {
+    color:white;
+    background:var(--light-green);
+}
+
+
+
+.image_input_area {
+    display:inline-block;
+    border:dashed 0.2rem var(--gray);
+    width:5rem;
+    height:5rem;
+
+    position:relative;
+    cursor:pointer;
+}
+.image_input{ display:none; }
+.image_input_preview{ width:100%; height:100%;position:absolute; }
+.image_input_icon{ width:100%; height:100%;position:absolute; }
+.image_input_icon i {
+    font-size:2rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}

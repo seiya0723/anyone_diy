@@ -6,27 +6,53 @@ window.addEventListener("load" , function (){
     });
 
 
-
     /* project/ */
     $("#add_material_form").on("click", function(){ add_material_form(); });
 
     /* project_single/ */
     $("#add_favorite").on("click", function(){ add_favorite(this); });
-
     $("#project_control_delete").on("click", function(){ project_control_delete(this); });
-
     $(".feedback_delete").on("click", function() { feedback_delete(this); });
 
-
     /* community_single */ 
-
     $("#community_control_closer").on("click",function() { community_control_closer(this); })
     $("#community_control_enter").on("click", function() { community_control_enter(this); })
-
 
     /* community_topic */
     $("#community_topic_control_closer").on("click",function() { community_topic_control_closer(this); })
     $(".topic_message_delete").on("click",function() { topic_message_delete(this); })
+
+    //DjangoMessageFrameWorkの削除機能
+    $(".notify_message_delete").on("click", function(){ $(this).parent(".notify_message").remove(); }); 
+    
+    //5秒経ったら自動的に消す
+    setTimeout( function(){ $(".notify_message").remove(); }, "5000");
+
+
+
+    // 画像のサムネイル表示
+    // http://php.o0o0.jp/article/jquery-preview_thumbnail
+
+    // 画像ファイルが指定された時、
+    $(".image_input").change(function() {
+
+        const label = $(this).parent("label");
+        const file  = $(this).prop("files")[0];
+
+        // 画像以外は処理を停止
+        if (! file.type.match("image.*")) {
+            $(this).val("");
+            return;
+        }
+
+        // 画像表示
+        const reader    = new FileReader();
+        reader.onload   = function() {
+            label.children(".image_input_preview").prop("src", reader.result );
+        }
+        reader.readAsDataURL(file);
+    });
+
 
 });
 
@@ -50,7 +76,6 @@ function add_favorite(elem) {
 
     for (let v of data ){ console.log(v); }
     for (let v of data.entries() ){ console.log(v); }
-
 
     $.ajax({
         url: url,

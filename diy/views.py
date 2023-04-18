@@ -623,7 +623,7 @@ class MypageView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
 
         user    = CustomUser.objects.filter(id=request.user.id).first()
-        form    = CustomUserForm(request.POST, instance=user)
+        form    = CustomUserForm(request.POST, request.FILES, instance=user)
 
         if form.is_valid():
             messages.success(request, "ユーザー情報の編集を受け付けました！")

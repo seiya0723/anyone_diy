@@ -10,7 +10,23 @@
                 {% else %}
                 <img class="content_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
                 {% endif %}
-                <div class="content_title">{{ favorite.project.title }}</div>
+
+                <div class="content_dt"><i class="fa-solid fa-pen-fancy"></i> {{ favorite.project.dt|date:"Y/m/d" }}</div>
+
+
+                <div class="content_title">
+                    <div class="content_detail">
+                        {# <i class="fa-solid fa-list"></i> {{ project.category.name }} #}
+
+                        {# 投稿日時は上部でも良いのでは？ #}
+                        {# <i class="fa-solid fa-pen-fancy"></i> {{ project.dt|date:"Y/m/d" }} #}
+
+                        <i class="fa-solid fa-hammer"></i> Lv. {{ favorite.project.level }}
+                        <i class="fa-regular fa-clock"></i> {{ favorite.project.time }}分
+                    </div>
+                    {{ favorite.project.title }}
+                </div>
+
             </div>
         </a>
     </div>

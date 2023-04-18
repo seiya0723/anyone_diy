@@ -37,7 +37,15 @@
     </select>
 
     <input type="text" name="title" maxlength="20" required placeholder="タイトル" value="{{ project.title }}">
-    <input type="file" name="thumbnail" accept="image/*">
+
+    <div>
+        <label class="image_input_area">
+            <input class="image_input" type="file" name="thumbnail" accept="image/*">
+            <div class="image_input_icon"><i class="fas fa-image"></i></div>
+            <img class="image_input_preview" src="{% if project.thumbnail %}{{ project.thumbnail.url }}{% endif %}" alt="">
+        </label>
+    </div>
+
 
     {# TODO: ここでレベル(レベルは5段階なので、アイコンで表現できないだろうか？)と所要時間のフォームを作っておく。#}
     <input type="number" name="time" placeholder="所要時間" value="{{ project.time }}">

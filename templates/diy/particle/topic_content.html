@@ -10,6 +10,9 @@
                 {% else %}
                 <img class="content_thumbnail" src="{% static 'diy/image/noimage.jpg' %}" alt="">
                 {% endif %}
+
+                <div class="content_dt"><i class="fa-solid fa-pen-fancy"></i> {{ topic.dt|date:"Y/m/d" }}</div>
+
                 <div class="content_title">{{ topic.title }}</div>
             </div>
         </a>
