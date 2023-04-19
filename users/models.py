@@ -29,8 +29,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                     },
                 )
 
-    first_name  = models.CharField(_('first name'), max_length=150)
     last_name   = models.CharField(_('last name'),  max_length=150)
+    first_name  = models.CharField(_('first name'), max_length=150)
     email       = models.EmailField(_('email address'), unique=True)
     
     handle_name     = models.CharField(verbose_name="ハンドルネーム", max_length=30)

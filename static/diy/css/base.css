@@ -750,6 +750,8 @@ textarea{
     border-radius:0.5rem;
 
     display:flex;
+
+    background: var(--green);
 }
 .notify_message_success{
     background:forestgreen;

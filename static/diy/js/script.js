@@ -21,8 +21,6 @@ window.addEventListener("load" , function (){
         $(this).parent(".material_form").remove();
     })
 
-
-
     /* community_single */ 
     $("#community_control_closer").on("click",function() { community_control_closer(this); })
     $("#community_control_enter").on("click", function() { community_control_enter(this); })
