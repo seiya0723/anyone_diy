@@ -14,7 +14,9 @@
     --font-color   : #F99F48;
     */
 }
-
+html {
+    scroll-behavior: smooth;
+}
 body{
     margin:0;
     color:var(--gray);
@@ -118,7 +120,7 @@ a {
 }
 
 .content_thumbnail_area:hover .content_thumbnail{
-    transform:translate(-50%,-50%) scale(1.25);
+    transform:translate(-50%,-50%) scale(1.1);
 }
 
 .content_title{
@@ -799,6 +801,14 @@ textarea{
     width:fit-content;
 }
 
+.user_introduction_area{
+    margin: 0.5rem;
+    padding: 1rem;
+    border: solid 0.2rem var(--light-green);
+    border-radius: 0.5rem;
+}
+
+
 
 .button {
     display:inline-block;
@@ -812,7 +822,21 @@ textarea{
     color:white;
     background:var(--light-green);
 }
-
+.delete_button {
+    display:inline-block;
+    background: white;
+    display: inline-block;
+    border: solid 1px crimson;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    margin:0.5rem;
+    transition:0.2s;
+}
+.delete_button:hover {
+    background:crimson;
+    color:white;
+}
 
 
 .image_input_area {

@@ -18,16 +18,14 @@
     </div>
 </div>
 
-<h3>自己紹介文</h3>
+<div class="user_introduction_area">{{ user.introduction|safe }}</div>
 
-<div>{{ user.introduction|safe }}</div>
-
-<h3>投稿したプロジェクト</h3>
+<h2>投稿したプロジェクト</h2>
 
 {% include "diy/particle/project_content.html" %}
 {% include "diy/particle/paginator.html" with data=projects param="project_page" %}
 
-<h3>加入中のコミュニティ</h3>
+<h2>加入中のコミュニティ</h2>
 
 {% include "diy/particle/community_content.html" %}
 {% include "diy/particle/paginator.html" with data=communities param="community_page" %}

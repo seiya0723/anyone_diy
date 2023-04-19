@@ -152,7 +152,7 @@ class ProjectModView(LoginRequiredMixin,View):
         context["form"]         = ProjectForm(instance=project)
 
         materials       = Material.objects.filter(project=pk, user=request.user).values_list("id", flat=True).order_by("dt")
-        print(materials)
+        #print(materials)
 
 
         return render(request, "diy/project_mod.html", context)
@@ -175,14 +175,18 @@ class ProjectModView(LoginRequiredMixin,View):
         else:
             messages.error(request, "プロジェクトの編集に失敗しました")
 
-        #TODO: ロジックが複雑に付き後回し。
-        #TODO:素材の削除もここで引き受ける
-        # 素材の削除
-        # すでに存在する素材
+
+        # このmaterialsにあり、material_idsに存在しないデータは削除する。
         materials       = Material.objects.filter(project=pk, user=request.user).order_by("dt")
         print(materials)
         material_ids    = request.POST.getlist("id")
         print(material_ids)
+
+        #素材の削除もここで引き受ける
+        for material in materials:
+            if str(material.id) not in material_ids:
+                print("存在しないので削除")
+                material.delete()
 
 
         names           = request.POST.getlist("name")
@@ -210,7 +214,7 @@ class ProjectModView(LoginRequiredMixin,View):
 
         messages.success(request, "プロジェクトの編集に成功しました")
 
-        return redirect("diy:project_mod", pk)
+        return redirect("diy:project_single", pk)
 
     def delete(self, request, pk, *args, **kwargs):
 
@@ -254,7 +258,11 @@ class ProjectSingleView(View):
             context["feedbacks"]    = paginator.get_page(1)
 
 
-        context["is_favorite"]     = Favorite.objects.filter(project=pk, user=request.user).exists()
+        if request.user.is_authenticated:
+            context["is_favorite"]     = Favorite.objects.filter(project=pk, user=request.user).exists()
+        else:
+            context["is_favorite"]     = False
+
 
 
         return render(request, "diy/project_single.html", context)
@@ -331,6 +339,10 @@ class CommunityView(View):
 
     def post(self, request, *args, **kwargs):
         #ここでコミュニティの作成
+
+        if not request.user.customer:
+            messages.error(request, "コミュニティの作成は有料会員のみ可能です")
+            return redirect("diy:mypage")
 
         copied              = request.POST.copy()
         copied["user"]      = request.user
@@ -647,7 +659,7 @@ class MypageQuitView(LoginRequiredMixin, View):
             messages.success(request, "退会処理を受け付けました。ご利用ありがとうございました。")
             print(custom_user)
             #TODO:退会処理をテストしておく
-            #custom_user.delete()
+            custom_user.delete()
         else:
             messages.error(request, "ユーザーが存在しません")
 
@@ -662,7 +674,7 @@ class UserView(View):
         context             = {}
         context["user"]     = CustomUser.objects.filter(id=pk).first()
 
-        projects            = Project.objects.filter(user=request.user).order_by("-dt")
+        projects            = Project.objects.filter(user=pk).order_by("-dt")
         paginator           = Paginator(projects,LIST_PER_PAGE)
 
         if "project_page" in request.GET:
@@ -670,9 +682,7 @@ class UserView(View):
         else:
             context["projects"] = paginator.get_page(1)
 
-        # TODO: 多対多のフィールドに含まれているかチェックするにはこれで良いのか？
-        # TODO: ユーザーを増やしてチェック
-        communities         = Community.objects.filter(members=request.user).order_by("-dt")
+        communities         = Community.objects.filter(members=pk).order_by("-dt")
         paginator           = Paginator(communities,LIST_PER_PAGE)
 
         if "community_page" in request.GET:
@@ -717,7 +727,7 @@ class FavoriteView(LoginRequiredMixin,View):
 
             cleaned     = form.clean()
             # すでに存在する場合は削除する(お気に入り解除)
-            favorites   = Favorite.objects.filter(project=cleaned["project"])
+            favorites   = Favorite.objects.filter(project=cleaned["project"], user=request.user)
 
             if favorites:
                 messages.success(request, "お気に入り解除しました！")

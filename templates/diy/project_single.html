@@ -6,7 +6,6 @@
 
 {% block main %}
 
-
 <div class="project_header_area">
 
     <div class="project_header">
@@ -21,8 +20,6 @@
     <div class="project_header">
         <h2 class="project_title">{{ project.title }}</h2>
 
-
-
         <div class="project_status_area">
             <div class="status_user_area">
                 <a class="status_user" href="{% url 'diy:user' project.user.id %}">
@@ -34,9 +31,9 @@
                 </a>
             </div>
             <div class="project_status">投稿日時: {{ project.dt }}</div>
-            <div class="project_status">カテゴリ: <a href="">{{ project.category.name }}</a></div>
+            <div class="project_status">カテゴリ: <a href="{% url 'diy:project' %}?category={{ project.category.id }}">{{ project.category.name }}</a></div>
+            <div class="project_status">作業難度: Lv.{{ project.level }}</div>
             <div class="project_status">所要時間: {{ project.time }}分</div>
-            <div class="project_status">作業難度: {{ project.level }}</div>
             <div class="project_status">フィードバック: 
                 {% with range=''|center:project.avg_star_score  %}
                 {% for x in range %}<i class="fa-solid fa-star"></i>{% endfor %}
@@ -49,6 +46,7 @@
         {# ここにレビューとお気に入り登録と編集・削除を行うことができるようにする。#}
         <div class="project_control_area">
 
+            {% if request.user.is_authenticated %}
             <div class="project_control">
                 <form action="{% url 'diy:favorite' %}" method="POST" class="project_control_favorite {% if is_favorite %}added_favorite{% endif %}">
                     {% csrf_token %}
@@ -62,6 +60,7 @@
                     </div>
                 </form>
             </div>
+            {% endif %}
             {% if project.user == request.user %}
             <div class="project_control">
                 <div class="project_control_admin">
@@ -124,11 +123,11 @@
             {% csrf_token %}
 
             <div>
-                <input id="star_radio_1" type="radio" name="star" value="1">
-                <input id="star_radio_2" type="radio" name="star" value="2">
-                <input id="star_radio_3" type="radio" name="star" value="3">
-                <input id="star_radio_4" type="radio" name="star" value="4">
-                <input id="star_radio_5" type="radio" name="star" value="5">
+                <input id="star_radio_1" type="radio" name="star" value="1" required>
+                <input id="star_radio_2" type="radio" name="star" value="2" required>
+                <input id="star_radio_3" type="radio" name="star" value="3" required>
+                <input id="star_radio_4" type="radio" name="star" value="4" required>
+                <input id="star_radio_5" type="radio" name="star" value="5" required>
                 <div class="star_radio_label_area">
                     <div class="star_radio_label_flex">
                         <label class="star_radio_label" for="star_radio_5"><div class="true_star" ><i class="fas fa-star"></i></div><div class="false_star"><i class="far fa-star"></i></div></label>
@@ -140,7 +139,7 @@
                 </div>
             </div>
 
-            <textarea name="comment" placeholder="ここにフィードバックを入力してください"></textarea>
+            <textarea name="comment" placeholder="ここにフィードバックを入力してください" maxlength="1000" required></textarea>
 
             <div class="text-right">
                 <input type="submit" value="送信">

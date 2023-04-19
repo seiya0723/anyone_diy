@@ -9,7 +9,6 @@
 
 <h2><a href="{% url 'diy:community_single' community_topic.community.id  %}">{{ community_topic.community }}</a> > {{ community_topic.title }}</h2>
 
-
 <div class="topic_area">
 
     <div class="topic_content">
@@ -17,7 +16,6 @@
         {% if community_messages %}
             {% for community_message in community_messages %}
             <div class="topic_message_area">
-
 
                 <div class="topic_message_status_area">
                     <div class="topic_message_status">投稿日時: {{ community_message.dt }}</div>
@@ -30,10 +28,9 @@
                             {% endif %}
                         </a>
                     </div>
-
                 </div>
+
                 <div class="topic_message">{{ community_message.comment|safe }}</div>
-                
                 
                 {% if community_message.user == request.user or community_message.community_topic.user == request.user %}
                 {% comment %}
@@ -49,9 +46,12 @@
                     </div>
                 </div>
                 {% endcomment %}
-                <div class="text-right topic_message_delete">
+
+                <div class="text-right">
+                    <button type="button" class="message_delete topic_message_delete">
                     <input class="topic_message_delete_url" type="hidden" value="{% url 'diy:community_topic' community_message.id %}">
-                    <button type="button" class="message_delete">削除</button>
+                        削除
+                    </button>
                 </div>
                 {% endif %}
 

@@ -14,6 +14,15 @@ window.addEventListener("load" , function (){
     $("#project_control_delete").on("click", function(){ project_control_delete(this); });
     $(".feedback_delete").on("click", function() { feedback_delete(this); });
 
+    
+    /* project_mod */
+
+    $(document).on("click", ".material_delete", function(){ 
+        $(this).parent(".material_form").remove();
+    })
+
+
+
     /* community_single */ 
     $("#community_control_closer").on("click",function() { community_control_closer(this); })
     $("#community_control_enter").on("click", function() { community_control_enter(this); })
@@ -27,7 +36,6 @@ window.addEventListener("load" , function (){
     
     //5秒経ったら自動的に消す
     setTimeout( function(){ $(".notify_message").remove(); }, "5000");
-
 
 
     // 画像のサムネイル表示
@@ -52,6 +60,8 @@ window.addEventListener("load" , function (){
         }
         reader.readAsDataURL(file);
     });
+
+
 
 
 });

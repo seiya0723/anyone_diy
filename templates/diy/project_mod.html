@@ -10,6 +10,10 @@
 
 <h2>プロジェクトを編集する</h2>
 
+<div class="text-right">
+    <a class="button" href="{% url 'diy:project_single' project.id %}">編集キャンセル</a>
+</div>
+
 <form action="" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 
@@ -23,6 +27,8 @@
             <input type="hidden" name="id" value="{{ material.id }}">
             <input type="text" name="name" placeholder="素材名" value="{{ material.name }}">
             <input type="text" name="amount" placeholder="量" value="{{ material.amount }}">
+
+            <button type="button" class="delete_button material_delete">削除</button>
         </div>
         {% endfor %}
     </div>
@@ -46,10 +52,17 @@
         </label>
     </div>
 
-
-    {# TODO: ここでレベル(レベルは5段階なので、アイコンで表現できないだろうか？)と所要時間のフォームを作っておく。#}
-    <input type="number" name="time" placeholder="所要時間" value="{{ project.time }}">
-    <input type="number" name="level" placeholder="レベル" value="{{ project.level }}">
+    <div>
+        <select name="level">
+            <option value="">作業レベル</option>
+            <option value="1" {% if project.str_level == "1" %}selected{% endif %}>Lv.1</option>
+            <option value="2" {% if project.str_level == "2" %}selected{% endif %}>Lv.2</option>
+            <option value="3" {% if project.str_level == "3" %}selected{% endif %}>Lv.3</option>
+            <option value="4" {% if project.str_level == "4" %}selected{% endif %}>Lv.4</option>
+            <option value="5" {% if project.str_level == "5" %}selected{% endif %}>Lv.5</option>
+        </select>
+        <input type="number" name="time" placeholder="所要時間" min="0" value="{{ project.time }}">
+    </div>
 
     <textarea name="description" placeholder="プロジェクトの説明">{{ project.description }}</textarea>
 
@@ -57,7 +70,9 @@
 
     {{ form.process }}
 
-    <input type="submit" value="送信"> 
+    <div class="text-right">
+        <input type="submit" value="送信"> 
+    </div>
 
 </form>
 {% endblock %}

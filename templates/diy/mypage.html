@@ -5,7 +5,6 @@
 
 {% block main %}
 
-
 <h2>投稿したプロジェクト</h2>
 
 {% include "diy/particle/project_content.html" %}
@@ -16,7 +15,6 @@
 {% include "diy/particle/community_content.html" %}
 {% include "diy/particle/paginator.html" with data=communities param="community_page" %}
 
-
 <h2>お気に入り</h2>
 
 {% include "diy/particle/search.html" with search="project" %}
@@ -24,8 +22,11 @@
 {% include "diy/particle/paginator.html" with data=favorites param="favorite_page" %}
 
 
-
 <h2>プロフィール編集</h2>
+
+<div class="text-right">
+    <a class="button" href="{% url 'diy:user' request.user.id %}">プレビュー</a>
+</div>
 
 <form action="" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
@@ -42,7 +43,6 @@
         </label>
     </div>
     {{ form.introduction }}
-
     <div class="text-right">
         <input type="submit" value="編集">
     </div>
@@ -50,10 +50,7 @@
 
 <h2>有料会員登録</h2>
 
-{# TODO: ここでStripeのサブスク処理を #}
-
 {% if request.user.customer %}
-
 <div>
     <a class="button" href="{% url 'diy:portal' %}">有料会員登録設定をする</a>
 </div>
@@ -64,7 +61,7 @@
 </form>
 {% endif %}
 
-<h2>プロジェクトの作成</h2>
+<h2 id="create_project">プロジェクトの作成</h2>
 
 <form action="{% url 'diy:project'  %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
@@ -85,7 +82,6 @@
 
     <h3>プロジェクト</h3>
 
-
     <div>
         <select name="category">
             <option value="">カテゴリを選んでください</option>
@@ -94,24 +90,31 @@
             {% endfor %}
         </select>
         <input type="text" name="title" maxlength="20" required placeholder="タイトル">
-        <div>
-            <label class="image_input_area">
-                <input class="image_input" type="file" name="thumbnail" accept="image/*">
-                <div class="image_input_icon"><i class="fas fa-image"></i></div>
-                <img class="image_input_preview" src="" alt="">
-            </label>
-        </div>
     </div>
 
-    {# TODO: ここでレベル(レベルは5段階なので、アイコンで表現できないだろうか？)と所要時間のフォームを作っておく。#}
     <div>
-        <input type="number" name="time" placeholder="所要時間">
-        <input type="number" name="level" placeholder="レベル">
+        <label class="image_input_area">
+            <input class="image_input" type="file" name="thumbnail" accept="image/*">
+            <div class="image_input_icon"><i class="fas fa-image"></i></div>
+            <img class="image_input_preview" src="" alt="">
+        </label>
+    </div>
+
+    <div>
+        <select name="level">
+            <option value="">作業レベル</option>
+            <option value="1">Lv.1</option>
+            <option value="2">Lv.2</option>
+            <option value="3">Lv.3</option>
+            <option value="4">Lv.4</option>
+            <option value="5">Lv.5</option>
+        </select>
+        <input type="number" name="time" placeholder="所要時間" min="0">
     </div>
 
     <textarea name="description" placeholder="プロジェクトの説明"></textarea>
 
-    <h3>作業工程</h3>
+    <h4>作業工程</h4>
     {{ project_form.process }}
 
     <div class="text-right">
@@ -119,10 +122,10 @@
     </div>
 </form>
 
-<h2>コミュニティの作成</h2>
+<h2 id="create_community">コミュニティの作成</h2>
 
 {# TODO:後にここで有料会員限定に書き換える #}
-{% if request.user.is_authenticated %}
+{% if request.user.customer %}
 <form action="{% url 'diy:community' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="text" name="name" required maxlength="20" placeholder="タイトル" >
@@ -149,7 +152,6 @@
         <input type="submit" value="退会する">
     </div>
 </form>
-
 
 {% endblock %}
 

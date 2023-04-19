@@ -78,6 +78,11 @@ class Project(models.Model):
 
     def feedback_amount(self):
         return Feedback.objects.filter(project=self.id).count()
+
+
+
+    def str_level(self):
+        return str(self.level)
     
     
     def __str__(self):
