@@ -1,27 +1,25 @@
 {% extends 'admin/index.html' %}
 
-{# TODO:管理サイトでビューを動かす方法が不明なため、便宜的にカスタムテンプレートタグを使用した。方法が見つかれば修正する。#}
-{# {% load param_change %} #}
-
+{# TODO: 集計機能等はMIDDLEWAREを使用して集計した。#}
 
 {% block sidebar %}
 {{ block.super }}
 
 <h2>総会員数</h2>
 
-{# <div>{% total_members %} 人</div> #}
-
+<div style="text-align:right;">{{ request.ALL_USER }}</div>
 
 <h2>無料会員数</h2>
 
-
+<div style="text-align:right;">{{ request.FREE_USER }}</div>
 
 <h2>有料会員数</h2>
 
-
+<div style="text-align:right;">{{ request.PAID_USER }}</div>
 
 <h2>DIYプロジェクト数</h2>
 
+<div style="text-align:right;">{{ request.PROJECTS }}</div>
 
 
 

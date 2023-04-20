@@ -8,7 +8,7 @@ class CustomUserAdmin(UserAdmin):
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name','first_kana', 'last_kana', 'email')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name','first_kana', 'last_kana', 'email', "customer")}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
@@ -21,7 +21,7 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
 
-    list_display = ('username', 'email', 'first_name', 'last_name','first_kana', 'last_kana', 'is_staff')
+    list_display = ('username', 'email', 'first_name', 'last_name','first_kana', 'last_kana', 'is_staff',"customer")
     
     # 権限で絞り込む
     list_filter = (
