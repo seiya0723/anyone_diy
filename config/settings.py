@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,11 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-@emsiaz&$@yzdvzs(hz4c9x6tdql7tn(0p#=^t77#r6welpp$5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
-
-
 
 
 # Application definition
@@ -151,7 +150,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [ BASE_DIR / "static" ]
+
+if DEBUG:
+    STATICFILES_DIRS = [ BASE_DIR / "static" ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -179,7 +180,7 @@ ALLOWED_TAGS = [
     'a', 'div', 'p', 'span', 'img', 'em', 'i', 'li', 'ol', 'ul', 'strong', 'br',
     'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
     'table', 'tbody', 'thead', 'tr', 'td',
-    'abbr', 'acronym', 'b', 'blockquote', 'code', 'strike', 'u', 'sup', 'sub',
+    'abbr', 'acronym', 'b', 'blockquote', 'code', 'strike', 'u', 'sup', 'sub','font'
 ]
 ATTRIBUTES = {
     '*': ['style', 'align', 'title', ],
@@ -188,4 +189,49 @@ ATTRIBUTES = {
 }
 
 
-from .local_settings import *
+if DEBUG:
+    from .local_settings import *
+
+if not DEBUG:
+
+    # ALLOWED_HOSTSにホスト名)を入力
+    ALLOWED_HOSTS = [ os.environ["HOST_NAME"] ]
+
+    # 静的ファイル配信ミドルウェア、whitenoiseを使用。※ 順番不一致だと動かないため下記をそのままコピーする。
+    MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        ]
+
+    # DBを使用する場合は下記を入力する。
+    DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME': os.environ["DB_NAME"],
+                'USER': os.environ["DB_USER"],
+                'PASSWORD': os.environ["DB_PASS"],
+                'HOST': os.environ["DB_HOST"],
+                'PORT': '5432',
+                }
+            }
+
+    #HerokuPostgresの接続方法(SSL使用、接続の有効時間は600秒)
+    import dj_database_url
+    db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
+    DATABASES['default'].update(db_from_env)
+
+    # 静的ファイル(static)の存在場所を指定する。
+    STATIC_ROOT = BASE_DIR / 'static'
+
+    SECRET_KEY = os.environ["SECRET_KEY"]
+
+    STRIPE_API_KEY          = os.environ["STRIPE_API_KEY"]
+    STRIPE_PUBLISHABLE_KEY  = os.environ["STRIPE_PUBLISHABLE_KEY"]
+    STRIPE_PRICE_ID         = os.environ["STRIPE_PRICE_ID"]
+

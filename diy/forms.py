@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Category,Project,Material,Feedback,Favorite,FavoriteFolder,Community,CommunityTopic,CommunityMessage
+from .models import Category,Project,Material,Feedback,Favorite,FavoriteFolder,Community,CommunityTopic,CommunityMessage,Information
 from users.models import CustomUser
 
 from django_summernote.widgets import SummernoteWidget
@@ -40,7 +40,10 @@ class ProjectCategoryForm(forms.ModelForm):
         model   = Project
         fields  = [ "category" ]
 
-
+class ProjectLevelForm(forms.ModelForm):
+    class Meta:
+        model   = Project
+        fields  = [ "level" ]
 
 
 
@@ -109,9 +112,18 @@ class CustomUserForm(forms.ModelForm):
 
     class Meta:
         model   = CustomUser
-        fields  = ["first_name","last_name","handle_name","introduction","icon",]
+        fields  = ["first_name","last_name","first_kana","last_kana","handle_name","introduction","icon",]
 
     introduction    = HTMLField()
 
 
+
+class InformationForm(forms.ModelForm):
+
+    class Meta:
+        model   = Information
+        fields  = [ "overview", "term", "site_id" ]
+
+    overview    = HTMLField()
+    term        = HTMLField()
 

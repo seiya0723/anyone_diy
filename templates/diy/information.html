@@ -1,0 +1,25 @@
+{% extends "diy/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block main %}
+
+
+<h2>会社概要</h2>
+
+<div class="text-center">
+    <img src="{% static 'diy/image/logo02.png' %}" alt="会社ロゴ">
+</div>
+
+{{ information.overview|safe }}
+
+<h2>利用規約</h2>
+
+{{ information.term|safe }}
+
+{% endblock %}
+
+
+

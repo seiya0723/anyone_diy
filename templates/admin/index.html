@@ -1,0 +1,31 @@
+{% extends 'admin/index.html' %}
+
+{# TODO:管理サイトでビューを動かす方法が不明なため、便宜的にカスタムテンプレートタグを使用した。方法が見つかれば修正する。#}
+{# {% load param_change %} #}
+
+
+{% block sidebar %}
+{{ block.super }}
+
+<h2>総会員数</h2>
+
+{# <div>{% total_members %} 人</div> #}
+
+
+<h2>無料会員数</h2>
+
+
+
+<h2>有料会員数</h2>
+
+
+
+<h2>DIYプロジェクト数</h2>
+
+
+
+
+
+
+
+{% endblock %}

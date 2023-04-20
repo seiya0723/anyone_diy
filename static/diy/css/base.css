@@ -32,7 +32,9 @@ main{
     margin:auto;
 }
 */
-
+main{
+    min-height:100vh;
+}
 
 
 img { max-width:100%; }
@@ -859,4 +861,46 @@ textarea{
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
+}
+
+
+
+/* TODO:配置が他のフォームと合わないので修正を */
+/* checkbox */
+/*
+.input_chk {
+    display:none;
+}
+.input_label {
+    display:inline-block;
+
+    position:relative;
+    padding:1rem 2rem;
+    margin:0.25rem;
+    background:darkgray;
+    transition:0.2s;
+    cursor:pointer;
+}
+.input_label::before {
+    content:"降順";
+    position:absolute;
+    top:0;
+    left:0;
+    width:50%;
+    height:100%;
+    border:1px solid gray;
+    background:white;
+    transition:0.2s;
+}
+input[type="checkbox"].input_chk:checked + label.input_label{ background:lime; }
+input[type="checkbox"].input_chk:checked + label.input_label::before{ left:50%;content:"昇順"; }
+*/
+
+
+
+
+footer {
+    padding:2rem 1rem;
+    background:var(--gray);
+    color:white;
 }

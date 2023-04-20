@@ -8,12 +8,22 @@
         <option value="{{ category.id }}" {% if category.str_id == request.GET.category %}selected{% endif %}>{{ category.name }}</option>
         {% endfor %}
     </select>
+    <select name="level">
+        <option value="">作業レベル未指定</option>
+        <option value="1">Lv.1</option>
+        <option value="2">Lv.2</option>
+        <option value="3">Lv.3</option>
+        <option value="4">Lv.4</option>
+        <option value="5">Lv.5</option>
+    </select>
+    <label><input type="checkbox" name="old" {% if request.GET.old %}checked{% endif %}>: 古い順で表示する</label>
+
+    {% elif search == "community" %}
+    <label><input type="checkbox" name="many" {% if request.GET.many %}checked{% endif %}>: 会員数が多い順で表示する</label>
     {% endif %}
     <input type="text" name="search" value="{{ request.GET.search }}" placeholder="キーワードを入力してください">
     <input type="submit" value="検索">
 </form>
-
-{# TODO:ここに折りたたみ式で、詳細検索をする欄を用意する。 #}
 
 {% if search == "community" %}
 

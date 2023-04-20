@@ -3,6 +3,9 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator,MaxValueValidator
 from django.conf import settings
 
+
+from django.contrib.sites.models import Site
+
 from django.db.models import Avg
 
 import uuid
@@ -159,7 +162,6 @@ class Community(models.Model):
     class Meta:
         verbose_name_plural = "コミュニティ"
 
-
     id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
     dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
     name        = models.CharField(verbose_name="コミュニティ名",max_length=20)
@@ -167,6 +169,10 @@ class Community(models.Model):
 
     user        = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="+", verbose_name="投稿者",on_delete=models.CASCADE)
     members     = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="+", verbose_name="メンバー")
+
+    # 会員数の合計を計算
+    def total_members(self):
+        return len(self.members.all())
 
     def __str__(self):
         return self.name
@@ -201,4 +207,21 @@ class CommunityMessage(models.Model):
     community_topic =  models.ForeignKey(CommunityTopic,verbose_name="コミュニティトピック",on_delete=models.CASCADE)
     comment         = models.TextField(verbose_name="コメント")
     user            = models.ForeignKey(settings.AUTH_USER_MODEL,verbose_name="投稿者",on_delete=models.CASCADE)
+
+
+
+
+# 会社概要と利用規約
+class Information(models.Model):
+    class Meta:
+        verbose_name_plural = "会社概要と利用規約"
+
+    id          = models.UUIDField(verbose_name="ID",default=uuid.uuid4,primary_key=True,editable=False )
+    dt          = models.DateTimeField(verbose_name="投稿日時",default=timezone.now)
+
+    overview    = models.TextField(verbose_name="会社概要")
+    term        = models.TextField(verbose_name="会社概要")
+
+    site_id     = models.OneToOneField(Site,verbose_name="サイトID",on_delete=models.CASCADE,null=True,blank=True)
+
 

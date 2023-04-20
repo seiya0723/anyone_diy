@@ -31,6 +31,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     last_name   = models.CharField(_('last name'),  max_length=150)
     first_name  = models.CharField(_('first name'), max_length=150)
+
+    last_kana   = models.CharField(verbose_name="姓(カナ)", max_length=150)
+    first_kana  = models.CharField(verbose_name="名(カナ)", max_length=150)
+
+
+
     email       = models.EmailField(_('email address'), unique=True)
     
     handle_name     = models.CharField(verbose_name="ハンドルネーム", max_length=30)
@@ -59,12 +65,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     customer    = models.CharField(verbose_name="サブスクリプションカスタマーID",max_length=256, null=True,blank=True)
 
 
-
     objects     = UserManager()
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ["username","handle_name","first_name","last_name"]
+    REQUIRED_FIELDS = ["username","handle_name","first_name","last_name","first_kana","last_kana"]
 
     class Meta:
         verbose_name = _('user')

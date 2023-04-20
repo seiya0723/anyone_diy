@@ -18,8 +18,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # https://noauto-nolife.com/post/django-create-origin-mixin/
 
 
-from .models import Category,Project,Material,Feedback,Favorite,Community,CommunityTopic,CommunityMessage
-from .forms import CategoryForm,ProjectForm,ProjectCategoryForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityTopicForm, CommunityMessageForm,CommunityMemberForm,CustomUserForm
+from .models import Category,Project,Material,Feedback,Favorite,Community,CommunityTopic,CommunityMessage,Information
+from .forms import CategoryForm,ProjectForm,ProjectCategoryForm,ProjectLevelForm,MaterialForm,FeedbackForm,FavoriteForm,CommunityForm,CommunityTopicForm, CommunityMessageForm,CommunityMemberForm,CustomUserForm
 
 from users.models import CustomUser
 
@@ -29,6 +29,7 @@ from users.models import CustomUser
 from django.conf import settings
 from django.urls import reverse_lazy
 
+import operator
 import stripe
 stripe.api_key  = settings.STRIPE_API_KEY
 
@@ -75,10 +76,19 @@ class ProjectView(View):
             cleaned = form.clean()
             query &= Q( category=cleaned["category"] )
 
+        # 作業レベル検索
+        form    = ProjectLevelForm(request.GET)
 
+        if form.is_valid():
+            cleaned = form.clean()
+            query &= Q( level=cleaned["level"] )
+    
 
+        if "old" in request.GET:
+            projects            = Project.objects.filter(query).order_by("dt")
+        else:
+            projects            = Project.objects.filter(query).order_by("-dt")
 
-        projects    = Project.objects.filter(query).order_by("-dt")
         paginator   = Paginator(projects,LIST_PER_PAGE)
 
         if "project_page" in request.GET:
@@ -324,6 +334,12 @@ class CommunityView(View):
                 query &= Q(name__contains=word)
 
         communities     = Community.objects.filter(query).order_by("-dt")
+
+        # https://noauto-nolife.com/post/django-attr-method-sort/
+        # TODO: メソッドを実行して、その結果をもとにソーティングする。(会員数の多い順にソーティング)
+        if "many" in request.GET:
+            communities = sorted(communities, key=operator.methodcaller("total_members"), reverse=True)
+
 
         #TODO: 1ページに表示させるコンテンツ数は？
         paginator       = Paginator(communities,LIST_PER_PAGE)
@@ -621,8 +637,20 @@ class MypageView(LoginRequiredMixin, View):
             query &= Q( project__category=cleaned["category"] )
 
 
+        # 作業レベル検索
+        form    = ProjectLevelForm(request.GET)
 
-        favorites           = Favorite.objects.filter(query).order_by("-dt")
+        if form.is_valid():
+            cleaned = form.clean()
+            query &= Q( project__level=cleaned["level"] )
+
+
+        if "old" in request.GET:
+            favorites           = Favorite.objects.filter(query).order_by("dt")
+        else:
+            favorites           = Favorite.objects.filter(query).order_by("-dt")
+
+
         paginator           = Paginator(favorites,LIST_PER_PAGE)
 
         if "favorite_page" in request.GET:
@@ -815,4 +843,16 @@ class PortalView(LoginRequiredMixin,View):
         return redirect(portalSession.url)
 
 portal      = PortalView.as_view()
+
+
+# 利用規約と会社概要のページ
+class InformationView(View):
+    def get(self, request, *args, **kwargs):
+        context = {}
+        context["information"]   = Information.objects.filter(site_id=settings.SITE_ID).first()
+
+        return render(request, "diy/information.html", context)
+
+
+information = InformationView.as_view()
 

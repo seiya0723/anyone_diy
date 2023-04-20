@@ -34,6 +34,10 @@
         <input type="text" name="last_name"   value="{{ request.user.last_name   }}" placeholder="姓">
         <input type="text" name="first_name"  value="{{ request.user.first_name  }}" placeholder="名">
     </div>
+    <div>
+        <input type="text" name="last_kana"   value="{{ request.user.last_kana   }}" placeholder="姓(カナ)">
+        <input type="text" name="first_kana"  value="{{ request.user.first_kana  }}" placeholder="名(カナ)">
+    </div>
     <input type="text" name="handle_name" value="{{ request.user.handle_name }}" placeholder="ハンドルネーム">
     <div>アイコン:
         <label class="image_input_area">

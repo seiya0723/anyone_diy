@@ -8,7 +8,7 @@ class CustomUserAdmin(UserAdmin):
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name','first_kana', 'last_kana', 'email')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
@@ -17,19 +17,21 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username',"email","first_name","last_name","handle_name", 'password1', 'password2'),
+            'fields': ('username',"email","first_name","last_name","first_kana","last_kana","handle_name", 'password1', 'password2'),
         }),
     )
 
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
-
+    list_display = ('username', 'email', 'first_name', 'last_name','first_kana', 'last_kana', 'is_staff')
     
     # 権限で絞り込む
     list_filter = (
         ('is_staff', admin.BooleanFieldListFilter),
     )
 
+    search_fields = ('username', 'first_name', 'last_name','first_kana', 'last_kana', 'email')
 
-    search_fields = ('username', 'first_name', 'last_name', 'email')
+    
+
+
 
 admin.site.register(CustomUser, CustomUserAdmin)

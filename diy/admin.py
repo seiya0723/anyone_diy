@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Category,Project,Material,Feedback,Favorite,FavoriteFolder,Community,CommunityTopic,CommunityMessage #,Album
-from .forms import ProjectForm,CommunityMessageForm,FeedbackForm
+from .models import Category,Project,Material,Feedback,Favorite,FavoriteFolder,Community,CommunityTopic,CommunityMessage,Information
+from .forms import ProjectForm,CommunityMessageForm,FeedbackForm,InformationForm
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -60,10 +60,11 @@ class CommunityMessageAdmin(admin.ModelAdmin):
     list_display    = [ "id","dt","community_topic","comment","user", ]
 
 
-"""
-class AlbumAdmin(admin.ModelAdmin):
-    list_display    = [ "id","dt","image","user" ]
-"""
+
+class InformationAdmin(admin.ModelAdmin):
+    form            = InformationForm
+    list_display    = ["id","dt","overview","term","site_id"]
+
 
 
 admin.site.register(Category            ,CategoryAdmin        )
@@ -75,5 +76,4 @@ admin.site.register(Favorite            ,FavoriteAdmin        )
 admin.site.register(Community           ,CommunityAdmin       )
 admin.site.register(CommunityTopic      ,CommunityTopicAdmin  )
 admin.site.register(CommunityMessage    ,CommunityMessageAdmin)
-#admin.site.register(Album               ,AlbumAdmin           )
-
+admin.site.register(Information         ,InformationAdmin      )

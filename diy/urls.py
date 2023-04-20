@@ -25,5 +25,8 @@ urlpatterns = [
     path("success/"                   , views.success             , name="success"          ),
     path("portal/"                    , views.portal              , name="portal"           ),
     
+
+    path("information/"               , views.information         , name="information"      ),
+
 ]
 
