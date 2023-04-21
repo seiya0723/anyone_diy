@@ -5,9 +5,9 @@
 - `DEBUG` : Falseにしてください
 - `HOST_NAME` : ドメイン名を入れてください
 - `DB_NAME` : HerokuPostgres の DBの名前
-- `DB_USER` : HerokuPostgres の DBのユーザー
-- `DB_PASS` : HerokuPostgres の DBのユーザーのパスワード
-- `DB_HOST` : HerokuPostgres の DBの名前
+- `DB_USER` : HerokuPostgres の ユーザー名
+- `DB_PASS` : HerokuPostgres の ユーザーのパスワード
+- `DB_HOST` : HerokuPostgres の ホスト名
 
 - `SECRET_KEY` : https://noauto-nolife.com/post/django-secret-key-regenerate/ に書かれてあるソースコードをもとにシークレットキーを再発行してください
 
