@@ -13,7 +13,7 @@
 
 - `STRIPE_API_KEY` : Stripeの秘密鍵
 - `STRIPE_PUBLISHABLE_KEY` : Stripeの公開鍵
-- `STRIPE_PRICE_ID` : StripeのサブスクID
+- `STRIPE_PRICE_ID` : Stripeのサブスク商品のID
 
 
 ### Stripeサブスク商品の作り方
