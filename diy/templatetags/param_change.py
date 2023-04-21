@@ -16,6 +16,5 @@ from users.models import CustomUser
 
 @register.simple_tag()
 def total_members():
-    return CustomUser.objects.filter(is_active=True,is_staff=False).counts()
-
+    return CustomUser.objects.filter(is_active=True,is_staff=False).count()
 """
