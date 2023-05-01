@@ -166,7 +166,9 @@ if DEBUG:
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL   = "/media/"
-MEDIA_ROOT  = BASE_DIR / "media"
+
+if DEBUG:
+    MEDIA_ROOT  = BASE_DIR / "media"
 
 
 
@@ -243,4 +245,20 @@ if not DEBUG:
     STRIPE_API_KEY          = os.environ["STRIPE_API_KEY"]
     STRIPE_PUBLISHABLE_KEY  = os.environ["STRIPE_PUBLISHABLE_KEY"]
     STRIPE_PRICE_ID         = os.environ["STRIPE_PRICE_ID"]
+
+    
+    #INSTALLED_APPSにcloudinaryの追加
+    INSTALLED_APPS.append('cloudinary')
+    INSTALLED_APPS.append('cloudinary_storage')
+
+    #cloudinaryの設定
+    CLOUDINARY_STORAGE = { 
+            'CLOUD_NAME': os.environ['CLOUD_NAME'], 
+            'API_KEY'   : os.environ['API_KEY'], 
+            'API_SECRET': os.environ['API_SECRET'],
+            "SECURE"    : True,
+            }
+
+    #これで全てのファイルがアップロード可能(上限20MB)
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
 
