@@ -112,7 +112,8 @@ class ProjectView(View):
         copied          = request.POST.copy()
         copied["user"]  = request.user
 
-        form    = ProjectForm(copied)
+        # ここでファイルの保存がされていない問題
+        form    = ProjectForm(copied, request.FILES)
 
         if not form.is_valid():
             messages.error(request, "プロジェクトの投稿に失敗しました")
