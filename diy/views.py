@@ -179,7 +179,7 @@ class ProjectModView(LoginRequiredMixin,View):
         copied          = request.POST.copy()
         copied["user"]  = request.user
 
-        form    = ProjectForm(copied, instance=project)
+        form    = ProjectForm(copied, request.FILES ,instance=project)
 
         if form.is_valid():
             form.save()
